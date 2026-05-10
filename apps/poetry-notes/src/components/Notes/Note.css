@@ -1,0 +1,223 @@
+.note {
+    position: absolute;
+    min-width: 150px;
+    min-height: 80px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-accent-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    z-index: 1000;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+.note.collapsed {
+    min-height: unset;
+    height: 40px;
+}
+
+.note:hover {
+    box-shadow: var(--shadow-soft);
+}
+
+.note.selected {
+    border-color: var(--color-accent-primary);
+    border-left-color: var(--color-accent-primary);
+    box-shadow: var(--shadow-hover);
+    z-index: 1000;
+}
+
+.note.hovered,
+.note.highlight-hovered {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-hover);
+    z-index: 1001;
+}
+
+.note.link-source {
+    border-color: var(--color-accent-warm);
+    border-left-color: var(--color-accent-warm);
+    box-shadow: 0 0 20px hsla(15, 90%, 60%, 0.2);
+    animation: pulse-link 1s ease-in-out infinite;
+}
+
+.note.link-target {
+    border-color: hsla(15, 90%, 60%, 0.4);
+    cursor: pointer;
+}
+
+.note.link-target:hover {
+    border-color: var(--color-accent-warm);
+    box-shadow: 0 0 15px hsla(15, 90%, 60%, 0.15);
+}
+
+.note.dragging {
+    cursor: grabbing;
+    opacity: 0.9;
+    transform: scale(1.02);
+    box-shadow: var(--shadow-hover);
+    z-index: 1002;
+}
+
+@keyframes pulse-link {
+    50% { box-shadow: 0 0 25px hsla(15, 90%, 60%, 0.3); }
+}
+
+/* Special Note Types */
+.note-type-context {
+    border-left-color: var(--color-accent-success);
+}
+
+.note-type-personal-response {
+    border-left-color: hsl(280, 60%, 65%);
+}
+
+.note-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+}
+
+.note-type-context .note-title {
+    color: var(--color-accent-success);
+}
+
+.note-type-personal-response .note-title {
+    color: hsl(280, 60%, 65%);
+}
+
+.note-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.note-type-context .note-header {
+    background: hsla(145, 60%, 45%, 0.06);
+}
+
+.note-type-personal-response .note-header {
+    background: hsla(280, 60%, 65%, 0.06);
+}
+
+.note-drag-handle {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    letter-spacing: -2px;
+    cursor: grab;
+}
+
+.note-actions {
+    display: flex;
+    gap: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.note:hover .note-actions,
+.note.selected .note-actions {
+    opacity: 1;
+}
+
+.note-action-button {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 0.875rem;
+}
+
+.note-action-button:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-text-primary);
+}
+
+.note-action-button.link-button:hover {
+    background: hsla(15, 90%, 60%, 0.1);
+    color: var(--color-accent-warm);
+}
+
+.note-action-button.add-note-button:hover {
+    background: hsla(145, 60%, 45%, 0.1);
+    color: var(--color-accent-success);
+}
+
+.note-action-button.delete-button {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+.note-action-button.delete-button:hover {
+    background: hsla(0, 84%, 60%, 0.1);
+    color: var(--color-accent-destructive);
+}
+
+.note-action-button.collapse-button {
+    font-size: 0.65rem;
+}
+
+.note-action-button.collapse-button:hover {
+    background: var(--color-bg-tertiary);
+    color: var(--color-accent-primary);
+}
+
+.note-content {
+    width: 100%;
+    min-height: 60px;
+    padding: 0.75rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+    cursor: text;
+}
+
+.note-content::placeholder {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.note-links-count {
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.75rem;
+    color: var(--color-accent-primary);
+    font-weight: 600;
+}
+
+.note-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 6px;
+    height: 100%;
+    cursor: ew-resize;
+    transition: background-color 0.15s ease;
+    z-index: 10;
+}
+
+.note-resize-handle:hover {
+    background: hsla(220, 70%, 45%, 0.1);
+}
+
+.note.collapsed .note-resize-handle {
+    display: none;
+}

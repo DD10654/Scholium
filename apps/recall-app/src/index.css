@@ -1,0 +1,48 @@
+@import '@repo/ui/tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --pass4: 270 60% 55%;
+}
+
+:root.dark {
+  --pass4: 270 60% 70%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .gradient-hero { background: var(--gradient-hero); }
+  .gradient-warm { background: var(--gradient-warm); }
+  .gradient-success { background: var(--gradient-success); }
+  .bg-gradient-hero { background: var(--gradient-hero); }
+  .bg-gradient-success { background: var(--gradient-success); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-hover { box-shadow: var(--shadow-hover); }
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-fade-in {
+  animation: page-fade-in 0.22s ease-out;
+}

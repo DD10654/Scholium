@@ -1,0 +1,65 @@
+.notes-canvas {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+}
+
+.notes-canvas.linking-mode {
+    cursor: crosshair;
+}
+
+.empty-canvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-canvas p {
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text-secondary);
+}
+
+.empty-canvas span {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.linking-indicator {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-hero);
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 30px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    box-shadow: 0 4px 20px hsla(220, 70%, 45%, 0.3);
+    z-index: 100;
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}

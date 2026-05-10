@@ -1,0 +1,108 @@
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: var(--color-bg-primary);
+    overflow: hidden;
+}
+
+/* Clipping viewport — header sits above this */
+.viewport {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
+}
+
+.viewport.is-panning {
+    cursor: grabbing;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* Infinite canvas layer transformed by the camera */
+.content-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    will-change: transform;
+}
+
+.notes-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 100%;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.poem-panel {
+    position: relative;
+    z-index: 10;
+    width: 560px;
+    margin: 2rem auto;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-hover);
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 400px;
+    pointer-events: auto;
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.panel-header h2 {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.panel-hint {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+.panel-content {
+    flex: 1;
+    position: relative;
+    height: auto;
+}
+
+.panel-divider {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .poem-panel { width: 90%; }
+}
+
+@media (max-width: 768px) {
+    .poem-panel {
+        width: 100%;
+        margin: 0;
+        height: 100%;
+        border-radius: 0;
+    }
+}

@@ -1,0 +1,190 @@
+.app-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+    height: 60px;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-card);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.back-button {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-primary);
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background: var(--color-accent-primary);
+    color: #ffffff;
+    border-color: var(--color-accent-primary);
+}
+
+.title-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.project-title {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s ease;
+}
+
+.project-title:hover {
+    color: var(--color-accent-primary);
+}
+
+.edit-hint {
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.project-title:hover .edit-hint {
+    opacity: 0.6;
+}
+
+.title-input {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.75rem;
+    outline: none;
+    min-width: 200px;
+}
+
+.title-input:focus {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 3px hsla(220, 70%, 45%, 0.15);
+}
+
+.unsaved-indicator {
+    color: var(--color-accent-warm);
+    font-size: 0.875rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.header-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 2.5rem;
+}
+
+.header-button:hover:not(:disabled) {
+    background: var(--color-accent-primary);
+    color: #ffffff;
+    border-color: var(--color-accent-primary);
+}
+
+.header-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-left: 0.5rem;
+    padding: 0.25rem;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-sm);
+}
+
+.zoom-button,
+.zoom-reset {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.15s ease;
+}
+
+.zoom-button:hover,
+.zoom-reset:hover {
+    background: var(--color-bg-secondary);
+    color: var(--color-accent-primary);
+}
+
+.zoom-level {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    min-width: 40px;
+    text-align: center;
+}
+
+.zoom-reset {
+    font-size: 0.875rem;
+}
+
+.header-button .button-icon {
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    .app-header { padding: 0.5rem 1rem; }
+    .header-button span:not(.button-icon) { display: none; }
+    .header-button { padding: 0.5rem 0.75rem; }
+}

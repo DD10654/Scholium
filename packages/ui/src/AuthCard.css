@@ -1,0 +1,156 @@
+.rui-auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-primary);
+  padding: 2rem 1rem;
+  font-family: var(--font-body);
+  color: var(--color-text-primary);
+}
+
+.rui-auth-card {
+  width: 100%;
+  max-width: 22rem;
+  padding: 2.25rem 2rem 2.5rem;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-hover);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rui-auth-logo {
+  display: flex;
+  justify-content: center;
+  color: var(--color-accent-primary);
+  padding-bottom: 0.25rem;
+}
+
+.rui-auth-heading {
+  text-align: center;
+}
+
+.rui-auth-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.rui-auth-subtitle {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+.rui-auth-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.rui-auth-label > span {
+  letter-spacing: 0.01em;
+}
+
+.rui-auth-label input {
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 400;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.rui-auth-label input:focus {
+  border-color: var(--color-accent-primary);
+  box-shadow: 0 0 0 3px hsla(220, 70%, 45%, 0.15);
+}
+
+.rui-auth-error {
+  font-size: 0.85rem;
+  color: var(--color-accent-destructive);
+  background: hsla(0, 84%, 60%, 0.08);
+  border: 1px solid hsla(0, 84%, 60%, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+.rui-auth-submit {
+  margin-top: 0.25rem;
+  padding: 0.7rem 1rem;
+  background: var(--gradient-hero);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+  box-shadow: var(--shadow-soft);
+}
+
+.rui-auth-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hover);
+}
+
+.rui-auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rui-auth-success {
+  font-size: 0.85rem;
+  color: #16a34a;
+  background: hsla(142, 76%, 36%, 0.08);
+  border: 1px solid hsla(142, 76%, 36%, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+}
+
+.rui-auth-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: -0.25rem;
+}
+
+.rui-auth-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--color-accent-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rui-auth-link:hover {
+  opacity: 0.75;
+}
+
+.rui-auth-link-sep {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  user-select: none;
+}

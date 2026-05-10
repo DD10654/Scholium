@@ -1,0 +1,13 @@
+.app {
+  min-height: 100vh;
+  background: var(--color-bg-primary);
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-fade-in {
+  animation: page-fade-in 0.22s ease-out;
+}
