@@ -117,7 +117,7 @@
 
 .rui-app-card--current {
   background: var(--color-bg-primary, #f3f4f6);
-  border-color: var(--color-accent-primary, hsl(220,70%,45%));
+  border: 1px solid var(--color-accent-primary, hsl(220,70%,45%));
 }
 
 .rui-app-card--current:hover {
