@@ -265,6 +265,85 @@ importers:
         specifier: ^4.1.0
         version: 4.1.5(@types/node@22.19.17)(@vitest/browser-playwright@4.1.5)(@vitest/coverage-v8@4.1.5)(vite@7.3.2(@types/node@22.19.17)(jiti@1.21.7))
 
+  apps/past-papers:
+    dependencies:
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@supabase/supabase-js':
+        specifier: ^2.86.0
+        version: 2.104.1
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.30.1
+        version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.1
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.19)
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.32.0
+        version: 9.39.4
+      '@types/node':
+        specifier: ^22.16.5
+        version: 22.19.17
+      '@types/react':
+        specifier: ^18.3.23
+        version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.3.7
+        version: 18.3.7(@types/react@18.3.28)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.11.0
+        version: 3.11.0(vite@7.3.2(@types/node@22.19.17)(jiti@1.21.7))
+      autoprefixer:
+        specifier: ^10.4.21
+        version: 10.5.0(postcss@8.5.12)
+      eslint:
+        specifier: ^9.32.0
+        version: 9.39.4(jiti@1.21.7)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.39.4(jiti@1.21.7))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.20
+        version: 0.4.26(eslint@9.39.4(jiti@1.21.7))
+      globals:
+        specifier: ^15.15.0
+        version: 15.15.0
+      postcss:
+        specifier: ^8.5.6
+        version: 8.5.12
+      tailwindcss:
+        specifier: ^3.4.17
+        version: 3.4.19
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.38.0
+        version: 8.59.0(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      vite:
+        specifier: ^7.2.4
+        version: 7.3.2(@types/node@22.19.17)(jiti@1.21.7)
+
   apps/poetry-notes:
     dependencies:
       '@repo/ui':
@@ -515,6 +594,85 @@ importers:
       vitest:
         specifier: ^4.1.0
         version: 4.1.5(@types/node@22.19.17)(@vitest/browser-playwright@4.1.5)(@vitest/coverage-v8@4.1.5)(vite@7.3.2(@types/node@22.19.17)(jiti@1.21.7))
+
+  apps/scholium-home:
+    dependencies:
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@supabase/supabase-js':
+        specifier: ^2.86.0
+        version: 2.104.1
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: ^0.462.0
+        version: 0.462.0(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-router-dom:
+        specifier: ^6.30.1
+        version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.6.0
+        version: 2.6.1
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.19)
+    devDependencies:
+      '@eslint/js':
+        specifier: ^9.32.0
+        version: 9.39.4
+      '@types/node':
+        specifier: ^22.16.5
+        version: 22.19.17
+      '@types/react':
+        specifier: ^18.3.23
+        version: 18.3.28
+      '@types/react-dom':
+        specifier: ^18.3.7
+        version: 18.3.7(@types/react@18.3.28)
+      '@vitejs/plugin-react-swc':
+        specifier: ^3.11.0
+        version: 3.11.0(vite@7.3.2(@types/node@22.19.17)(jiti@1.21.7))
+      autoprefixer:
+        specifier: ^10.4.21
+        version: 10.5.0(postcss@8.5.12)
+      eslint:
+        specifier: ^9.32.0
+        version: 9.39.4(jiti@1.21.7)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.39.4(jiti@1.21.7))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.20
+        version: 0.4.26(eslint@9.39.4(jiti@1.21.7))
+      globals:
+        specifier: ^15.15.0
+        version: 15.15.0
+      postcss:
+        specifier: ^8.5.6
+        version: 8.5.12
+      tailwindcss:
+        specifier: ^3.4.17
+        version: 3.4.19
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.38.0
+        version: 8.59.0(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
+      vite:
+        specifier: ^7.2.4
+        version: 7.3.2(@types/node@22.19.17)(jiti@1.21.7)
 
   packages/ui:
     devDependencies:
@@ -6251,7 +6409,7 @@ snapshots:
 
   '@types/ws@8.18.1':
     dependencies:
-      '@types/node': 22.19.17
+      '@types/node': 24.12.2
 
   '@typescript-eslint/eslint-plugin@8.59.0(@typescript-eslint/parser@8.59.0(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)':
     dependencies:
