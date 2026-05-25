@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+import { Zap } from "lucide-react";
 import Layout from "@/components/Layout";
 import FolderCard from "@/components/FolderCard";
 import { LoadingGrid, ErrorState, EmptyState } from "@/components/StateViews";
@@ -7,13 +9,27 @@ import { listSubjects } from "@/lib/papers";
 const ACCENT_CYCLE = ["primary", "accent", "success"] as const;
 
 export default function SubjectsPage() {
+  const navigate = useNavigate();
   const { data, loading, error } = useAsync(() => listSubjects(), []);
 
   return (
     <Layout subtitle="Browse topical papers and mark schemes by subject, component, and chapter.">
-      <h2 className="font-display font-bold text-2xl text-foreground mb-6">
-        Subjects
-      </h2>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <h2 className="font-display font-bold text-2xl text-foreground">
+          Subjects
+        </h2>
+        <button
+          onClick={() => navigate("/generate")}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all hover:opacity-90"
+          style={{
+            background: "hsl(var(--accent))",
+            color: "hsl(var(--accent-foreground))",
+          }}
+        >
+          <Zap size={16} />
+          Generate Paper
+        </button>
+      </div>
 
       {loading && <LoadingGrid />}
       {error && <ErrorState error={error} />}

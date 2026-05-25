@@ -2,6 +2,19 @@ import { supabase, PAPERS_BUCKET } from "@/integrations/supabase/client";
 
 export type PaperType = "QP" | "MS";
 
+export interface Question {
+  id: string;
+  paper: string;
+  question_number: number;
+  chapter_name: string;
+  chapter_num: number;
+  sub_topic: string;
+  y_start: number;
+  y_end: number;
+  ms_y_start: number | null;
+  ms_y_end: number | null;
+}
+
 export interface PaperFile {
   type: PaperType;
   url: string;
@@ -110,4 +123,71 @@ export async function listChapters(subject: string, component: string): Promise<
   }
 
   return Array.from(groups.values()).sort((a, b) => a.number - b.number);
+}
+
+export async function getQuestionsByChapter(chapter: number): Promise<Question[]> {
+  const { data, error } = await supabase
+    .from("questions_metadata")
+    .select("*")
+    .eq("chapter_num", chapter)
+    .order("id");
+
+  if (error) throw error;
+  return (data ?? []) as Question[];
+}
+
+export async function getChapterName(chapter: number): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("questions_metadata")
+    .select("chapter_name")
+    .eq("chapter_num", chapter)
+    .limit(1)
+    .single();
+
+  if (error) return null;
+  return data?.chapter_name ?? null;
+}
+
+interface GeneratePaperOptions {
+  includeMarkScheme?: boolean;
+  randomize?: boolean;
+}
+
+export async function generatePaper(
+  questionIds: string[],
+  options: GeneratePaperOptions = {}
+): Promise<Blob> {
+  const response = await fetch("/api/compose-paper", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      selections: Object.fromEntries(questionIds.map((id) => [id, true])),
+      includeMarkScheme: options.includeMarkScheme ?? true,
+      randomize: options.randomize ?? false,
+    }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `Server error (${response.status})`;
+    try {
+      const error = await response.json();
+      errorMessage = error.error || errorMessage;
+    } catch {
+      const text = await response.text().catch(() => "");
+      if (text) errorMessage = text.slice(0, 200);
+    }
+    throw new Error(errorMessage);
+  }
+
+  const text = await response.text();
+  if (!text) throw new Error("Empty response from server");
+
+  const { pdfBase64 } = JSON.parse(text);
+  if (!pdfBase64) throw new Error("No PDF data in response");
+  const binaryString = atob(pdfBase64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return new Blob([bytes], { type: "application/pdf" });
 }
