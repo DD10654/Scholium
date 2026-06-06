@@ -9,18 +9,14 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: 1px solid var(--color-border);
-  background: hsla(0, 0%, 100%, 0.8);
-  backdrop-filter: blur(8px);
-}
-
-:root.dark .rui-settings-header,
-:root.dark-mode .rui-settings-header {
-  background: hsla(0, 0%, 0%, 0.4);
+  border-bottom: 1px solid var(--color-rule);
+  background: hsl(var(--card) / 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .rui-settings-header-inner {
-  max-width: 42rem;
+  max-width: 44rem;
   margin: 0 auto;
   padding: 0 1.5rem;
   height: 4rem;
@@ -35,33 +31,35 @@
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background: var(--color-bg-secondary);
   color: var(--color-text-primary);
   cursor: pointer;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
   flex-shrink: 0;
 }
 
 .rui-settings-back:hover {
-  background: var(--color-accent-primary);
-  color: #fff;
-  border-color: var(--color-accent-primary);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-color: hsl(var(--primary));
 }
 
 .rui-settings-title {
   font-family: var(--font-display);
-  font-size: 1.125rem;
+  font-size: 1.15rem;
   font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
 }
 
 .rui-settings-main {
-  max-width: 42rem;
+  max-width: 44rem;
   margin: 0 auto;
-  padding: 2rem 1.5rem 4rem;
+  padding: 2.5rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  animation: rui-rise 0.4s var(--ease-out-paper) both;
 }

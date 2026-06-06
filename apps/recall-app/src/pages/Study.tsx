@@ -8,29 +8,10 @@ import { useApp } from "@/contexts/AppContext";
 import type { Chapter } from "@/types";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { useTourStyles } from "@repo/ui";
-import { useTour } from "@/hooks/useTour";
-import { Joyride, type EventData, STATUS } from "react-joyride";
 import { Pass1 } from "@/components/study/Pass1";
 import { Pass2 } from "@/components/study/Pass2";
 import { Pass3 } from "@/components/study/Pass3";
 import { Pass4 } from "@/components/study/Pass4";
-
-const STUDY_TOUR_STEPS: import("react-joyride").Step[] = [
-  {
-    target: '[data-tour="study-pass"]',
-    title: "Your Pass Level",
-    content: "Each pass tests you differently: matching → multiple choice → recall → full definition from memory. Work through all 4 to truly master the material.",
-    placement: "bottom" as const,
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="study-start"]',
-    title: "You're Ready!",
-    content: "Click here to begin your first study session. Tour complete — good luck!",
-    placement: "top" as const,
-  },
-];
 
 async function fetchChapter(id: string): Promise<Chapter | null> {
   const [chapterRes, cardsRes] = await Promise.all([
@@ -58,12 +39,6 @@ export default function Study() {
   const pass = Math.max(1, Math.min(4, Number(searchParams.get("pass") || 1)));
   const [chapter, setChapter] = useState<Chapter | null | undefined>(undefined);
   const [started, setStarted] = useState(false);
-  const { completed: studyTourDone, complete: completeStudyTour } = useTour("recall-app-study");
-  const studyTourStyles = useTourStyles();
-
-  function handleStudyTourCallback({ status }: EventData) {
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completeStudyTour();
-  }
 
   useEffect(() => {
     if (!user) { navigate("/login"); return; }
@@ -114,15 +89,6 @@ export default function Study() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Joyride
-        steps={STUDY_TOUR_STEPS}
-        run={!studyTourDone && !started}
-        continuous
-        onEvent={handleStudyTourCallback}
-        options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-        styles={studyTourStyles}
-        locale={{ last: "Done" }}
-      />
       <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="max-w-2xl mx-auto px-6 h-16 flex items-center gap-4">
           <button
@@ -151,7 +117,6 @@ export default function Study() {
                 {chapter.name}
               </h2>
               <span
-                data-tour="study-pass"
                 className={cn("inline-block px-3 py-1 rounded-full text-xs font-bold mb-4", info.bg, info.text)}
               >
                 Pass {pass} · {passLabel}
@@ -173,7 +138,7 @@ export default function Study() {
                 <span className={cn("font-semibold", info.text)}>{passLabel}</span>
               </div>
             </div>
-            <Button size="lg" onClick={() => setStarted(true)} data-tour="study-start">
+            <Button size="lg" onClick={() => setStarted(true)}>
               Start Studying →
             </Button>
           </div>

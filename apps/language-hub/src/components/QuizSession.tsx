@@ -200,12 +200,12 @@ export const QuizSession = ({
         </div>
       </header>
 
-      <div className="container mx-auto max-w-2xl px-6 pt-4" data-tour="practice-progress">
+      <div className="container mx-auto max-w-2xl px-6 pt-4">
         <Progress value={((currentIndex + 1) / questions.length) * 100} className="h-2" />
       </div>
 
       <main className="container mx-auto max-w-2xl px-6 py-8">
-        <Card className="shadow-card animate-slide-up" data-tour="practice-question">
+        <Card className="shadow-card animate-slide-up">
           <CardContent className="p-8">
             <div className="flex justify-center mb-6">
               <span

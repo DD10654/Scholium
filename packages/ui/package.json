@@ -9,7 +9,7 @@
     "./auth-card.css": "./src/AuthCard.css",
     "./settings-layout.css": "./src/SettingsLayout.css",
     "./settings-card.css": "./src/SettingsCard.css",
-    "./app-hero-header.css": "./src/AppHeroHeader.css"
+    "./scholium-navbar.css": "./src/ScholiumNavbar.css"
   },
   "scripts": {
     "storybook": "storybook dev -p 6007",

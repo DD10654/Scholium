@@ -2,73 +2,22 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
 import { useProject } from '../contexts/ProjectContext';
 import type { ProjectIndexEntry } from '../contexts/ProjectContext';
-import { AppHeroHeader, useTourStyles } from '@repo/ui';
-import type { AppLink } from '@repo/ui';
-import '@repo/ui/app-hero-header.css';
-import { supabase } from '../integrations/supabase/client';
-import { useTour } from '../useTour';
-import { Joyride, type EventData, STATUS } from 'react-joyride';
-
-const TOUR_STEPS = [
-  {
-    target: '[data-tour="hero"]',
-    title: 'Welcome to Poetry Notes!',
-    content: 'Annotate poems and build interconnected notes, saved securely to the cloud.',
-    placement: 'bottom' as const,
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="continue-project"]',
-    title: 'Continue a Project',
-    content: 'Open and manage any of your previously saved poetry projects.',
-    placement: 'bottom' as const,
-  },
-  {
-    target: '[data-tour="new-project"]',
-    title: 'New Project',
-    content: 'Start a fresh annotation workspace — click here to create your first project and continue the tour inside the editor!',
-    placement: 'bottom' as const,
-  },
-  {
-    target: '[data-tour="import-project"]',
-    title: 'Import from File',
-    content: 'Load a previously exported JSON project file to continue working on it.',
-    placement: 'bottom' as const,
-  },
-  {
-    target: '[data-tour="settings-btn"]',
-    title: 'Settings',
-    content: 'Toggle dark mode and manage your account here.',
-    placement: 'bottom-end' as const,
-  },
-];
 import './LandingPage.css';
 import './LandingPageProjects.css';
 
 interface LandingPageProps {
     onProjectReady: () => void;
     onSettings: () => void;
+    description?: string | null;
 }
 
 type Screen = 'home' | 'open';
 
-export function LandingPage({ onProjectReady, onSettings }: LandingPageProps) {
+export function LandingPage({ onProjectReady, description }: LandingPageProps) {
     const { createNewProject, importProject, loadProjectList, openProject, deleteProject } = useProject();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState<string | null>(null);
     const [screen, setScreen] = useState<Screen>('home');
-    const { completed: tourDone, complete: completeTour } = useTour('poetry-notes');
-    const tourStylesLive = useTourStyles();
-    const [apps, setApps] = useState<AppLink[] | undefined>(undefined);
-
-    useEffect(() => {
-        supabase.from('scholium_apps').select('id, title, url, icon').order('sort_order')
-            .then(({ data }) => setApps((data ?? []) as AppLink[]));
-    }, []);
-
-    function handleTourCallback({ status }: EventData) {
-        if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completeTour();
-    }
     const [projects, setProjects] = useState<ProjectIndexEntry[]>([]);
     const [loadingList, setLoadingList] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -138,12 +87,10 @@ export function LandingPage({ onProjectReady, onSettings }: LandingPageProps) {
     if (screen === 'open') {
         return (
             <div className="landing-page">
-                <AppHeroHeader
-                    title="📝 Poetry Notes"
-                    subtitle="Your saved projects"
-                    onSettings={onSettings}
-                    apps={apps}
-                />
+                <header className="landing-page-header">
+                    <h1>Poetry Notes.</h1>
+                    <p>{description ?? 'Your saved annotations, every reading kept beside the verse.'}</p>
+                </header>
                 <div className="landing-content">
                     <div className="projects-toolbar">
                         <button className="projects-back-btn" onClick={() => setScreen('home')}>← Back</button>
@@ -188,26 +135,14 @@ export function LandingPage({ onProjectReady, onSettings }: LandingPageProps) {
 
     return (
         <div className="landing-page">
-            <Joyride
-                steps={TOUR_STEPS}
-                run={!tourDone && screen === 'home'}
-                continuous
-                onEvent={handleTourCallback}
-                options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-                styles={tourStylesLive}
-                locale={{ last: 'Done' }}
-            />
-
-            <AppHeroHeader
-                title="📝 Poetry Notes"
-                subtitle="Annotate and explore poetry with interconnected notes"
-                onSettings={onSettings}
-                apps={apps}
-            />
+            <header className="landing-page-header">
+                <h1>Poetry Notes.</h1>
+                <p>{description ?? 'Marginalia for verse, selections become anchors, notes become a canvas around the text.'}</p>
+            </header>
 
             <div className="landing-content">
                 <div className="landing-actions">
-                    <button className="action-button primary" onClick={() => setScreen('open')} data-tour="continue-project">
+                    <button className="action-button primary" onClick={() => setScreen('open')}>
                         <span className="button-icon">📂</span>
                         <span className="button-text">
                             <span className="button-title">Continue Project</span>
@@ -215,7 +150,7 @@ export function LandingPage({ onProjectReady, onSettings }: LandingPageProps) {
                         </span>
                     </button>
 
-                    <button className="action-button" onClick={handleCreateNew} data-tour="new-project">
+                    <button className="action-button" onClick={handleCreateNew}>
                         <span className="button-icon">✨</span>
                         <span className="button-text">
                             <span className="button-title">New Project</span>
@@ -223,7 +158,7 @@ export function LandingPage({ onProjectReady, onSettings }: LandingPageProps) {
                         </span>
                     </button>
 
-                    <button className="action-button" onClick={handleUploadClick} data-tour="import-project">
+                    <button className="action-button" onClick={handleUploadClick}>
                         <span className="button-icon">📤</span>
                         <span className="button-text">
                             <span className="button-title">Import from File</span>

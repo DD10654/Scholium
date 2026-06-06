@@ -4,39 +4,66 @@ import AppCard from "./AppCard";
 interface AppGridProps {
   apps: AppLink[];
   loading: boolean;
+  highlightedAppId?: string | null;
+  subject?: string | null;
 }
 
-export default function AppGrid({ apps, loading }: AppGridProps) {
+export default function AppGrid({ apps, loading, highlightedAppId, subject }: AppGridProps) {
+  const toolApps = apps.filter((a) => a.id !== "scholium-home");
+  const count = toolApps.length;
+  const subtitle = subject
+    ? `Tools that cover ${subject}.`
+    : count === 0
+      ? "Purpose-built tools for different kinds of study."
+      : `${count} tools, one account. Each one purpose-built for a different kind of study, use one or use them all.`;
+
   return (
-    <section id="tools" className="py-24 bg-background">
-      <div className="container mx-auto px-4 sm:px-6">
-        <div className="text-center mb-14">
+    <section id="tools" className="relative py-24 border-t border-[color:var(--color-rule)]">
+      <div className="max-w-5xl mx-auto px-6">
+        <header className="mb-12 text-center">
           <h2
-            className="font-display font-bold text-foreground mb-3"
-            style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)" }}
+            className="text-foreground"
+            style={{
+              fontSize: "clamp(2rem, 5vw, 3.25rem)",
+              lineHeight: 1.05,
+              letterSpacing: "-0.02em",
+              fontWeight: 700,
+            }}
           >
-            The Scholium Suite
+            {subject ? (
+              <>
+                The Scholium Suite —{" "}
+                <span style={{ color: "hsl(var(--primary))" }}>For {subject}</span>
+              </>
+            ) : (
+              <>
+                The Scholium <span style={{ color: "hsl(var(--primary))" }}>suite.</span>
+              </>
+            )}
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            Purpose-built tools for different kinds of learning. Use one, or
-            all together with the same account.
+          <p className="mt-4 max-w-2xl mx-auto text-foreground/75 leading-relaxed text-lg">
+            {subtitle}
           </p>
-        </div>
+        </header>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {[0, 1, 2].map((i) => (
+          <div className="flex flex-col gap-12">
+            {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-card rounded-2xl border border-border h-52 animate-pulse"
-                style={{ boxShadow: "var(--shadow-card)" }}
+                className="bg-paper rounded-[var(--radius-lg)] border border-[color:var(--color-border)] h-64 animate-pulse"
               />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
-            {apps.map((app) => (
-              <AppCard key={app.id} {...app} />
+          <div className="flex flex-col gap-12 rui-stagger">
+            {toolApps.map((app, i) => (
+              <AppCard
+                key={app.id}
+                {...app}
+                highlighted={app.id === highlightedAppId}
+                imageSide={i % 2 === 0 ? "right" : "left"}
+              />
             ))}
           </div>
         )}

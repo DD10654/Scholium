@@ -130,6 +130,10 @@
     border-color: var(--color-accent-primary);
 }
 
+.header-button:focus-visible {
+    outline: none;
+}
+
 .header-button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -181,6 +185,11 @@
 
 .header-button .button-icon {
     font-size: 1rem;
+    background: none;
+    border: none;
+    width: auto;
+    height: auto;
+    border-radius: 0;
 }
 
 @media (max-width: 600px) {

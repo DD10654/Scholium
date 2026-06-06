@@ -1,11 +1,16 @@
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { useDarkMode } from "@repo/ui";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { ScholiumNavbar } from "@repo/ui";
+import type { AppLink } from "@repo/ui";
+import "@repo/ui/scholium-navbar.css";
+import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
+import Demo from "./pages/Demo";
 import CreateSet from "./pages/CreateSet";
 import Study from "./pages/Study";
 import Practice from "./pages/Practice";
@@ -19,12 +24,42 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function FadeRoutes() {
+async function loadScholiumApps(): Promise<AppLink[]> {
+  const first = await supabase
+    .from("scholium_apps")
+    .select("id, title, url, icon, subjects, description")
+    .order("sort_order");
+  if (first.error && /(subjects|description)/i.test(first.error.message)) {
+    const fallback = await supabase
+      .from("scholium_apps")
+      .select("id, title, url, icon")
+      .order("sort_order");
+    return (fallback.data ?? []) as AppLink[];
+  }
+  return (first.data ?? []) as AppLink[];
+}
+
+function NavbarWired({ apps }: { apps: AppLink[] }) {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const homeUrl = apps.find((a) => a.id === "scholium-home")?.url ?? "";
+  return (
+    <ScholiumNavbar
+      apps={apps}
+      homeUrl={homeUrl}
+      user={user ? { email: user.email ?? "" } : null}
+      onSignOut={signOut}
+      onSettings={() => navigate("/settings")}
+    />
+  );
+}
+
+function FadeRoutes({ description }: { description?: string | null }) {
   const location = useLocation();
   return (
     <div key={location.key} className="page-fade-in">
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Index description={description} />} />
         <Route path="/create" element={<CreateSet />} />
         <Route path="/edit/:id" element={<EditSet />} />
         <Route path="/folder/:id" element={<Folder />} />
@@ -41,19 +76,35 @@ function FadeRoutes() {
 }
 
 const App = () => {
-  useDarkMode();
+  const [apps, setApps] = useState<AppLink[]>([]);
+
+  useEffect(() => {
+    loadScholiumApps().then(setApps);
+  }, []);
+
+  const ownDescription = apps.find((a) => a.id === "language-hub")?.description ?? null;
+
   return (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <FadeRoutes />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/demo" element={<Demo />} />
+            <Route
+              path="*"
+              element={
+                <AuthProvider>
+                  <NavbarWired apps={apps} />
+                  <FadeRoutes description={ownDescription} />
+                </AuthProvider>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
   );
 };
 

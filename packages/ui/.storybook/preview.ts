@@ -1,7 +1,7 @@
 import type { Preview } from '@storybook/react-vite';
 import '../src/tokens.css';
 import '../src/AuthCard.css';
-import '../src/AppHeroHeader.css';
+import '../src/ScholiumNavbar.css';
 import '../src/SettingsLayout.css';
 import '../src/SettingsCard.css';
 

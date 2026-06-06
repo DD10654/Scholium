@@ -10,10 +10,11 @@ export interface AuthCardProps {
   onSignUp: (email: string, password: string) => Promise<string | null | void>;
   onForgotPassword: (email: string) => Promise<string | null | void>;
   hint?: string;
+  defaultMode?: 'signin' | 'signup';
 }
 
-export function AuthCard({ onSignIn, onSignUp, onForgotPassword, hint }: AuthCardProps) {
-  const [mode, setMode] = useState<AuthMode>('signin');
+export function AuthCard({ onSignIn, onSignUp, onForgotPassword, hint, defaultMode = 'signin' }: AuthCardProps) {
+  const [mode, setMode] = useState<AuthMode>(defaultMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');

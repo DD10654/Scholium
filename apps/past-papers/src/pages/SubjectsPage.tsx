@@ -8,25 +8,41 @@ import { listSubjects } from "@/lib/papers";
 
 const ACCENT_CYCLE = ["primary", "accent", "success"] as const;
 
-export default function SubjectsPage() {
+interface SubjectsPageProps {
+  description?: string | null;
+}
+
+export default function SubjectsPage({ description }: SubjectsPageProps = {}) {
   const navigate = useNavigate();
   const { data, loading, error } = useAsync(() => listSubjects(), []);
 
   return (
-    <Layout subtitle="Browse topical papers and mark schemes by subject, component, and chapter.">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <h2 className="font-display font-bold text-2xl text-foreground">
-          Subjects
-        </h2>
+    <Layout subtitle={description ?? "Topical IGCSE practice papers and mark schemes, organised by subject, component, and chapter."}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <span className="rui-eyebrow block mb-2">Section 01 · Index</span>
+          <h2
+            className="text-foreground"
+            style={{
+              fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+              fontWeight: 700,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.05,
+            }}
+          >
+            Subjects <span style={{ color: "hsl(var(--primary))" }}>at hand.</span>
+          </h2>
+        </div>
         <button
           onClick={() => navigate("/generate")}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all hover:opacity-90"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-[var(--radius-sm)] text-sm font-bold transition-all hover:-translate-y-0.5"
           style={{
-            background: "hsl(var(--accent))",
-            color: "hsl(var(--accent-foreground))",
+            background: "hsl(var(--primary))",
+            color: "hsl(var(--primary-foreground))",
+            boxShadow: "var(--shadow-soft)",
           }}
         >
-          <Zap size={16} />
+          <Zap size={14} />
           Generate Paper
         </button>
       </div>

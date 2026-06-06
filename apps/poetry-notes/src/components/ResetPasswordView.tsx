@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../integrations/supabase/client';
 import { ScholiumLogo } from '@repo/ui';
-import '@repo/ui/app-hero-header.css';
 
 export function ResetPasswordView() {
   const [password, setPassword] = useState('');

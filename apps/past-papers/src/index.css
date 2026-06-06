@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* All apps share the same palette (defined in tokens.css):
+ * black bg + neutral blue primary + neutral green accent + Arial. */
+
 @layer base {
   * {
     @apply border-border;
@@ -26,4 +29,12 @@
   .shadow-card      { box-shadow: var(--shadow-card); }
   .shadow-hover     { box-shadow: var(--shadow-hover); }
   .shadow-accent    { box-shadow: var(--shadow-accent); }
+
+  .bg-paper         { background-color: hsl(var(--card)); }
+
+  /* Highlighter swipe — green instead of yellow now */
+  .pp-highlight {
+    background: linear-gradient(180deg, transparent 60%, hsl(var(--accent) / 0.45) 60%);
+    padding: 0 0.2em;
+  }
 }

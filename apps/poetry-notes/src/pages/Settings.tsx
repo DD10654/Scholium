@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProject } from '../contexts/ProjectContext';
 import { SettingsLayout, SettingsCard } from '@repo/ui';
-import { resetTours } from '../useTour';
 import { supabase } from '../integrations/supabase/client';
 
 interface SettingsProps {
@@ -13,7 +12,6 @@ interface SettingsProps {
 export function Settings({ onBack, onSignOut }: SettingsProps) {
   const { user } = useAuth();
   const { isDarkMode, toggleDarkMode } = useProject();
-  const [resettingTour, setResettingTour] = useState(false);
   const [resetEmail, setResetEmail] = useState(user?.email || '');
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -57,26 +55,6 @@ export function Settings({ onBack, onSignOut }: SettingsProps) {
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode"
           />
-        }
-      />
-
-      <SettingsCard
-        icon="🎯"
-        title="Retake Tour"
-        description="Restart the guided walkthrough from the beginning"
-        action={
-          <button
-            className="rui-settings-outline-btn"
-            disabled={resettingTour}
-            onClick={async () => {
-              setResettingTour(true);
-              await resetTours('poetry-notes', 'poetry-notes-editor');
-              setResettingTour(false);
-              onBack();
-            }}
-          >
-            {resettingTour ? '…' : 'Restart'}
-          </button>
         }
       />
 

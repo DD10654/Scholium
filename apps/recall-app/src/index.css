@@ -4,12 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --pass4: 270 60% 55%;
-}
+/* All apps share the same palette (defined in tokens.css):
+ * black bg + neutral blue primary + neutral green accent + Arial. */
 
-:root.dark {
-  --pass4: 270 60% 70%;
+:root {
+  --pass4: 150 45% 48%;          /* green for the 4-pass progress badge */
 }
 
 @layer base {
@@ -36,6 +35,8 @@
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-hover { box-shadow: var(--shadow-hover); }
+
+  .bg-paper { background-color: hsl(var(--card)); }
 }
 
 @keyframes page-fade-in {
@@ -44,5 +45,5 @@
 }
 
 .page-fade-in {
-  animation: page-fade-in 0.22s ease-out;
+  animation: page-fade-in 0.22s var(--ease-out-paper);
 }

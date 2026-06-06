@@ -5,25 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { QuizSession, QuizQuestion, QuestionType } from "@/components/QuizSession";
-import { useTourStyles } from "@repo/ui";
-import { useTour } from "@/hooks/useTour";
-import { Joyride, type EventData, STATUS } from "react-joyride";
-
-const PRACTICE_TOUR_STEPS = [
-  {
-    target: '[data-tour="practice-progress"]',
-    title: "Your Progress",
-    content: "This bar tracks how far through the session you are. Keep going!",
-    placement: "bottom" as const,
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="practice-question"]',
-    title: "Answer the Question",
-    content: "Read the prompt carefully and select or type your answer. Tour complete — enjoy the practice!",
-    placement: "top" as const,
-  },
-];
 
 interface VocabularyItem {
   id: string;
@@ -80,12 +61,6 @@ const Practice = () => {
 
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [loading, setLoading] = useState(true);
-  const { completed: practiceTourDone, complete: completePracticeTour } = useTour("language-hub-practice");
-  const practiceTourStyles = useTourStyles();
-
-  function handlePracticeTourCallback({ status }: EventData) {
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completePracticeTour();
-  }
 
   useEffect(() => {
     fetchMasteredItems();
@@ -159,15 +134,6 @@ const Practice = () => {
 
   return (
     <>
-      <Joyride
-        steps={PRACTICE_TOUR_STEPS}
-        run={!practiceTourDone && !loading}
-        continuous
-        onEvent={handlePracticeTourCallback}
-        options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-        styles={practiceTourStyles}
-        locale={{ last: "Done" }}
-      />
       <QuizSession
         questions={questions}
         title="Practice Mode"

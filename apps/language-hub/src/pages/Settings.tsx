@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { resetTours } from "@/hooks/useTour";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
@@ -17,7 +16,6 @@ const Settings = () => {
     const [resetEmail, setResetEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
     const [resetSent, setResetSent] = useState(false);
-    const [resettingTour, setResettingTour] = useState(false);
 
     const handlePasswordReset = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,23 +60,6 @@ const Settings = () => {
                         onClick={toggleDark}
                         aria-label="Toggle dark mode"
                     />
-                }
-            />
-
-            <SettingsCard
-                icon="🎯"
-                title="Retake Tour"
-                description="Restart the guided walkthrough from the beginning"
-                action={
-                    <Button variant="outline" size="sm" disabled={resettingTour}
-                        onClick={async () => {
-                            setResettingTour(true);
-                            await resetTours('language-hub', 'language-hub-practice');
-                            setResettingTour(false);
-                            navigate('/');
-                        }}>
-                        {resettingTour ? '…' : 'Restart'}
-                    </Button>
                 }
             />
 

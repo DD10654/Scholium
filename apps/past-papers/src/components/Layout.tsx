@@ -1,9 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
-import { AppHeroHeader, useDarkMode } from "@repo/ui";
-import type { AppLink } from "@repo/ui";
-import "@repo/ui/app-hero-header.css";
-import { supabase } from "@/integrations/supabase/client";
+import type { ReactNode } from "react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -14,27 +9,16 @@ export default function Layout({
   children,
   subtitle = "Browse topical papers and mark schemes by subject, component, and chapter.",
 }: LayoutProps) {
-  useDarkMode();
-  const navigate = useNavigate();
-  const [apps, setApps] = useState<AppLink[] | undefined>(undefined);
-
-  useEffect(() => {
-    supabase
-      .from("scholium_apps")
-      .select("id, title, url, icon")
-      .order("sort_order")
-      .then(({ data }) => setApps((data ?? []) as AppLink[]))
-      .catch(() => setApps([]));
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col">
-      <AppHeroHeader
-        title="📚 Past Papers"
-        subtitle={subtitle}
-        apps={apps}
-        onSettings={() => navigate("/settings")}
-      />
+      <header className="container mx-auto px-4 sm:px-6 pt-10 pb-2">
+        <h1 className="text-foreground text-3xl sm:text-4xl font-bold tracking-tight">
+          Past Papers.
+        </h1>
+        <p className="mt-2 text-muted-foreground max-w-2xl leading-relaxed">
+          {subtitle}
+        </p>
+      </header>
       <main className="flex-1">
         <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-10">
           {children}

@@ -1,9 +1,11 @@
 @import '@repo/ui/tokens.css';
-@import '@repo/ui/auth-card.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* All apps share the same palette (defined in tokens.css):
+ * black bg + neutral blue primary + neutral green accent + Arial. */
 
 @layer base {
   * {
@@ -27,4 +29,17 @@
   .shadow-card      { box-shadow: var(--shadow-card); }
   .shadow-hover     { box-shadow: var(--shadow-hover); }
   .shadow-accent    { box-shadow: var(--shadow-accent); }
+
+  .bg-paper         { background-color: hsl(var(--card)); }
 }
+
+/* Persona-based primary colour overrides (scoped to scholium-home).
+ * Teacher → emerald green. Parent → rose pink. Set on documentElement
+ * by HomePage when a persona button is active. */
+:root[data-persona="teacher"]          { --primary: 142 76% 36%; }
+:root.dark[data-persona="teacher"],
+:root.dark-mode[data-persona="teacher"] { --primary: 142 69% 58%; }
+
+:root[data-persona="parent"]           { --primary: 330 81% 51%; }
+:root.dark[data-persona="parent"],
+:root.dark-mode[data-persona="parent"]  { --primary: 331 85% 70%; }

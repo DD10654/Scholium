@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ScholiumLogo } from "@repo/ui";
-import "@repo/ui/app-hero-header.css";
 
 export default function ResetPassword() {
   const navigate = useNavigate();

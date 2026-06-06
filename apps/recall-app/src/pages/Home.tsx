@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronDown, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -21,46 +21,6 @@ import { PASS_CONFIG } from "@/components/PassBadge";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { AppHeroHeader, useTourStyles } from "@repo/ui";
-import type { AppLink } from "@repo/ui";
-import { useTour } from "@/hooks/useTour";
-import "@repo/ui/app-hero-header.css";
-import { supabase } from "@/integrations/supabase/client";
-import { Joyride, type EventData, STATUS } from "react-joyride";
-
-const TOUR_STEPS = [
-  {
-    target: '[data-tour="hero"]',
-    title: "Welcome to Recall Master!",
-    content: "Use active recall across 4 progressive passes to master any subject — from simple matching to writing full definitions from memory.",
-    placement: "bottom" as const,
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="subject-tabs"]',
-    title: "Your Subjects",
-    content: "Switch between subjects here. Each subject has its own sections and chapters to work through.",
-    placement: "bottom" as const,
-  },
-  {
-    target: '[data-tour="first-section"]',
-    title: "Sections & Chapters",
-    content: "Click a section to expand it. Inside you'll find chapters — each one tracks your current pass level (1 through 4).",
-    placement: "top" as const,
-  },
-  {
-    target: '[data-tour="first-section"]',
-    title: "Start Your First Session!",
-    content: "Open a section, choose a chapter, and click Study — your tour continues inside the session!",
-    placement: "top" as const,
-  },
-  {
-    target: '[data-tour="settings-btn"]',
-    title: "Settings",
-    content: "Toggle dark mode, reset your progress, or sign out from here.",
-    placement: "bottom-end" as const,
-  },
-];
 
 function ChapterRow({
   chapter,
@@ -224,24 +184,11 @@ function SectionCard({
   );
 }
 
-export default function Home() {
+export default function Home({ description }: { description?: string | null } = {}) {
   const navigate = useNavigate();
   const { user, loadingAuth } = useApp();
   const { subjects, loading: loadingSubjects } = useSubjects();
   const [activeSubject, setActiveSubject] = useState<string | null>(null);
-  const { completed: tourDone, complete: completeTour } = useTour("recall-app");
-  const tourStylesLive = useTourStyles();
-  const [apps, setApps] = useState<AppLink[] | undefined>(undefined);
-
-  useEffect(() => {
-    supabase.from('scholium_apps').select('id, title, url, icon').order('sort_order')
-      .then(({ data }) => setApps((data ?? []) as AppLink[]))
-      .catch(() => setApps([]));
-  }, []);
-
-  function handleTourCallback({ status }: EventData) {
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completeTour();
-  }
 
   const subject = subjects.find((s) => s.id === activeSubject) ?? subjects[0];
 
@@ -264,25 +211,17 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Joyride
-        steps={TOUR_STEPS}
-        run={!tourDone && !loadingSubjects && subjects.length > 0}
-        continuous
-        onEvent={handleTourCallback}
-        options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-        styles={tourStylesLive}
-        locale={{ last: "Done" }}
-      />
-
-      <AppHeroHeader
-        title="⚛️ Recall Master"
-        subtitle="Active recall across 4 progressive passes — match, choose, recall."
-        onSettings={() => navigate("/settings")}
-        apps={apps}
-      />
+      <header className="max-w-5xl mx-auto px-6 pt-10 pb-2">
+        <h1 className="text-foreground text-3xl sm:text-4xl font-bold tracking-tight">
+          Recall.
+        </h1>
+        <p className="mt-2 text-muted-foreground max-w-2xl leading-relaxed">
+          {description ?? "A laboratory for memory. Four progressive passes (match, choose, recall, write) until the answer is yours."}
+        </p>
+      </header>
 
       <div className="max-w-5xl mx-auto px-6 mt-6">
-        <div className="flex gap-2" data-tour="subject-tabs">
+        <div className="flex gap-2">
           {subjects.map((s) => (
             <button
               key={s.id}
@@ -308,7 +247,6 @@ export default function Home() {
               key={section.id}
               className="animate-slide-up"
               style={{ animationDelay: `${i * 0.05}s` }}
-              {...(i === 0 ? { "data-tour": "first-section" } : {})}
             >
               <SectionCard
                 subject={subject!}

@@ -21,7 +21,7 @@ export function Pass1({ cards, onComplete }: Pass1Props) {
   return (
     <div>
       <div className="text-xs text-muted-foreground font-semibold mb-4">
-        Round {chunkIdx + 1} of {chunks.length} — match each term to its definition
+        Round {chunkIdx + 1} of {chunks.length}, match each term to its definition
       </div>
       <MatchingRound
         key={chunkIdx}

@@ -1,50 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, BookOpen, Trash2, BarChart3, Dumbbell, Pencil, FolderOpen, FolderPlus } from "lucide-react";
-import { AppHeroHeader, useTourStyles } from "@repo/ui";
-import type { AppLink } from "@repo/ui";
-import "@repo/ui/app-hero-header.css";
-import { useTour } from "@/hooks/useTour";
-import { Joyride, type EventData, STATUS } from "react-joyride";
-
-const TOUR_STEPS = [
-  {
-    target: '[data-tour="hero"]',
-    title: "Welcome to Language Flash Hub!",
-    content: "Build vocabulary in French and Spanish with flashcards, multiple choice quizzes, and dictation exercises.",
-    placement: "bottom" as const,
-    disableBeacon: true,
-  },
-  {
-    target: '[data-tour="cta-buttons"]',
-    title: "Create or Practice",
-    content: "Create a new vocabulary set to get started, or click 'Practice All' to jump into a live session — your tour continues there!",
-    placement: "bottom" as const,
-  },
-  {
-    target: '[data-tour="folders-heading"]',
-    title: "Folders",
-    content: "Group related sets into folders to keep your vocabulary organised by topic or course.",
-    placement: "top" as const,
-  },
-  {
-    target: '[data-tour="sets-heading"]',
-    title: "Vocabulary Sets",
-    content: "Each set holds a collection of term–definition pairs. Click a set to study it, or hover to edit or delete.",
-    placement: "top" as const,
-  },
-  {
-    target: '[data-tour="settings-btn"]',
-    title: "Settings",
-    content: "Toggle dark mode and manage your account here.",
-    placement: "bottom-end" as const,
-  },
-];
 import {
   Dialog,
   DialogContent,
@@ -85,23 +46,10 @@ interface Folder {
   set_count: number;
 }
 
-const Index = () => {
-  const navigate = useNavigate();
+const Index = ({ description }: { description?: string | null } = {}) => {
   const [sets, setSets] = useState<VocabularySet[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
   const [loading, setLoading] = useState(true);
-  const { completed: tourDone, complete: completeTour } = useTour("language-hub");
-  const tourStylesLive = useTourStyles();
-  const [apps, setApps] = useState<AppLink[] | undefined>(undefined);
-
-  useEffect(() => {
-    supabase.from('scholium_apps').select('id, title, url, icon').order('sort_order')
-      .then(({ data }) => setApps((data ?? []) as AppLink[]));
-  }, []);
-
-  function handleTourCallback({ status }: EventData) {
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completeTour();
-  }
 
   const [newFolderOpen, setNewFolderOpen] = useState(false);
   const [newFolderName, setNewFolderName] = useState("");
@@ -180,7 +128,7 @@ const Index = () => {
     try {
       const { error } = await supabase.from("folders").delete().eq("id", folderId);
       if (error) throw error;
-      toast.success("Folder deleted — sets preserved");
+      toast.success("Folder deleted, sets preserved");
       fetchAll();
     } catch (error) {
       console.error("Error deleting folder:", error);
@@ -214,32 +162,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Joyride
-        steps={TOUR_STEPS}
-        run={!tourDone && !loading}
-        continuous
-        onEvent={handleTourCallback}
-        options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-        styles={tourStylesLive}
-        locale={{ last: "Done" }}
-      />
+      <header className="container mx-auto max-w-4xl px-6 pt-10 pb-2">
+        <h1 className="text-foreground text-3xl sm:text-4xl font-bold tracking-tight">
+          Language Hub.
+        </h1>
+        <p className="mt-2 text-muted-foreground max-w-2xl leading-relaxed">
+          {description ?? "A field-notebook for vocabulary in French 🇫🇷 and Spanish 🇪🇸, flashcards, drills, dictation, until the words become yours."}
+        </p>
+      </header>
 
-      <AppHeroHeader
-        title="💬 Language Flash Hub"
-        subtitle="Master vocabulary with flashcards, translations, and dictation exercises. In French 🇫🇷 and Spanish 🇪🇸!"
-        onSettings={() => navigate("/settings")}
-        apps={apps}
-      />
-
-      <div className="container mx-auto max-w-4xl px-6 pt-8 pb-0 flex gap-3 flex-wrap" data-tour="cta-buttons">
+      <div className="container mx-auto max-w-4xl px-6 pt-8 pb-0 flex gap-3 flex-wrap">
         <Link to="/create">
-          <Button variant="accent" size="lg" className="animate-bounce-soft">
+          <Button variant="default" size="lg" className="animate-bounce-soft">
             <Plus className="mr-2 h-5 w-5" />
             Create New Set
           </Button>
         </Link>
         <Link to="/practice-setup">
-          <Button variant="accent" size="lg">
+          <Button variant="default" size="lg">
             <Dumbbell className="mr-2 h-5 w-5" />
             Practice
           </Button>
@@ -250,7 +190,7 @@ const Index = () => {
         {/* Folders section */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-foreground font-display" data-tour="folders-heading">Folders</h2>
+            <h2 className="text-2xl font-bold text-foreground font-display">Folders</h2>
             <Dialog open={newFolderOpen} onOpenChange={setNewFolderOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline">
@@ -344,7 +284,7 @@ const Index = () => {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete this folder?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              The folder "{folder.name}" will be deleted. The sets inside it will not be deleted — they will become uncategorized.
+                              The folder "{folder.name}" will be deleted. The sets inside it will not be deleted, they will become uncategorized.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -376,7 +316,7 @@ const Index = () => {
         {/* Sets section */}
         <section>
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-foreground font-display" data-tour="sets-heading">Your Vocabulary Sets</h2>
+            <h2 className="text-2xl font-bold text-foreground font-display">Your Vocabulary Sets</h2>
             <span className="text-muted-foreground text-sm">
               {uncategorizedSets.length} {uncategorizedSets.length === 1 ? "set" : "sets"}
             </span>

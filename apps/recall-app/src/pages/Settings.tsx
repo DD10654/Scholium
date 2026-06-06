@@ -7,14 +7,12 @@ import { Loader2 } from "lucide-react";
 import { useApp } from "@/contexts/AppContext";
 import { toast } from "sonner";
 import { SettingsLayout, SettingsCard, useDarkMode } from "@repo/ui";
-import { resetTours } from "@/hooks/useTour";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Settings() {
   const navigate = useNavigate();
   const { user, loadingAuth, resetProgress, logout } = useApp();
   const { isDark, toggle: toggleDark } = useDarkMode();
-  const [resettingTour, setResettingTour] = useState(false);
   const [resetEmail, setResetEmail] = useState(user?.email || "");
   const [resetLoading, setResetLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -60,27 +58,6 @@ export default function Settings() {
             onClick={toggleDark}
             aria-label="Toggle dark mode"
           />
-        }
-      />
-
-      <SettingsCard
-        icon="🎯"
-        title="Retake Tour"
-        description="Restart the guided walkthrough from the beginning"
-        action={
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={resettingTour}
-            onClick={async () => {
-              setResettingTour(true);
-              await resetTours('recall-app', 'recall-app-study');
-              setResettingTour(false);
-              navigate('/');
-            }}
-          >
-            {resettingTour ? '…' : 'Restart'}
-          </Button>
         }
       />
 

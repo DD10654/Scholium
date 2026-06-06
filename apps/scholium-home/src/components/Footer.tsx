@@ -1,48 +1,43 @@
-import { useState, useEffect } from "react";
 import { ScholiumLogo } from "@repo/ui";
-import { supabase } from "@/integrations/supabase/client";
 import type { AppLink } from "@repo/ui";
 
-export default function Footer() {
-  const [apps, setApps] = useState<AppLink[]>([]);
+interface FooterProps {
+  apps: AppLink[];
+}
 
-  useEffect(() => {
-    supabase
-      .from("scholium_apps")
-      .select("id, title, url, icon")
-      .order("sort_order")
-      .then(({ data }) => setApps((data ?? []) as AppLink[]));
-  }, []);
+export default function Footer({ apps }: FooterProps) {
+  const toolApps = apps.filter((a) => a.id !== "scholium-home");
 
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="container mx-auto px-4 sm:px-6 py-10">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col items-center sm:items-start gap-1.5">
+    <footer className="border-t border-[color:var(--color-rule)] bg-paper">
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-12 gap-8 items-start">
+          <div className="col-span-12 sm:col-span-7 flex flex-col gap-3">
             <ScholiumLogo size="sm" />
-            <p className="text-xs text-muted-foreground">
-              Learning tools that respect your memory.
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-md">
+              Learning tools that respect your memory, and your attention.
             </p>
           </div>
 
-          <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            {apps.map((app) => (
-              <a
-                key={app.id}
-                href={app.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {app.title}
-              </a>
-            ))}
-          </nav>
+          <div className="col-span-12 sm:col-span-5">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              The suite
+            </p>
+            <nav className="flex flex-col gap-1.5">
+              {toolApps.map((app) => (
+                <a
+                  key={app.id}
+                  href={app.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-foreground/75 hover:text-primary transition-colors w-fit"
+                >
+                  {app.title}
+                </a>
+              ))}
+            </nav>
+          </div>
         </div>
-
-        <p className="mt-8 text-center text-xs text-muted-foreground/60">
-          © {new Date().getFullYear()} Scholium. All rights reserved.
-        </p>
       </div>
     </footer>
   );

@@ -298,10 +298,10 @@ export default function PracticeSection() {
             <Progress value={pct} className="max-w-xs" />
             <p className="text-muted-foreground text-sm max-w-xs">
               {pct === 100
-                ? "Perfect score — outstanding work!"
+                ? "Perfect score, outstanding work!"
                 : pct >= 70
-                  ? "Great effort — keep it up!"
-                  : "Keep practicing — you'll get there!"}
+                  ? "Great effort, keep it up!"
+                  : "Keep practicing, you'll get there!"}
             </p>
             <div className="flex gap-3 flex-wrap justify-center">
               <Button variant="outline" onClick={() => navigate("/")}>

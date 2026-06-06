@@ -1,25 +1,48 @@
 import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProjectProvider, useProject } from './contexts/ProjectContext';
-import { useDarkMode } from '@repo/ui';
+import { ScholiumNavbar } from '@repo/ui';
+import type { AppLink } from '@repo/ui';
+import '@repo/ui/scholium-navbar.css';
+import { supabase } from './integrations/supabase/client';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
 import { LandingPage } from './components/LandingPage';
 import { MainLayout } from './components/Layout/MainLayout';
 import { ResetPasswordView } from './components/ResetPasswordView';
+import Demo from './pages/Demo';
 import './App.css';
+
+async function loadScholiumApps(): Promise<AppLink[]> {
+  const first = await supabase
+    .from('scholium_apps')
+    .select('id, title, url, icon, subjects, description')
+    .order('sort_order');
+  if (first.error && /(subjects|description)/i.test(first.error.message)) {
+    const fallback = await supabase
+      .from('scholium_apps')
+      .select('id, title, url, icon')
+      .order('sort_order');
+    return (fallback.data ?? []) as AppLink[];
+  }
+  return (first.data ?? []) as AppLink[];
+}
 
 type View = 'landing' | 'editor' | 'settings';
 
 function AppContent() {
   const { user, loadingAuth, isPasswordRecovery, signOut } = useAuth();
   const { setUserId, saveToCloud } = useProject();
-  useDarkMode();
   const [currentView, setCurrentView] = useState<View>('landing');
+  const [apps, setApps] = useState<AppLink[]>([]);
 
   useEffect(() => {
     setUserId(user?.id ?? null);
   }, [user, setUserId]);
+
+  useEffect(() => {
+    loadScholiumApps().then(setApps);
+  }, []);
 
   if (loadingAuth) {
     return (
@@ -45,8 +68,18 @@ function AppContent() {
     setCurrentView('landing');
   };
 
+  const homeUrl = apps.find((a) => a.id === 'scholium-home')?.url ?? '';
+  const ownDescription = apps.find((a) => a.id === 'poetry-notes')?.description ?? null;
+
   return (
     <div className="app">
+      <ScholiumNavbar
+        apps={apps}
+        homeUrl={homeUrl}
+        user={user ? { email: user.email ?? '' } : null}
+        onSignOut={handleSignOut}
+        onSettings={() => setCurrentView('settings')}
+      />
       <div key={currentView} className="page-fade-in">
         {currentView === 'settings' ? (
           <Settings onBack={() => setCurrentView('landing')} onSignOut={handleSignOut} />
@@ -56,6 +89,7 @@ function AppContent() {
           <LandingPage
             onProjectReady={handleProjectReady}
             onSettings={() => setCurrentView('settings')}
+            description={ownDescription}
           />
         )}
       </div>
@@ -64,6 +98,9 @@ function AppContent() {
 }
 
 export default function App() {
+  if (typeof window !== 'undefined' && window.location.pathname === '/demo') {
+    return <Demo />;
+  }
   return (
     <AuthProvider>
       <ProjectProvider>

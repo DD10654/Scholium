@@ -32,10 +32,10 @@ export function CompletionScreen({ score, total, onComplete }: CompletionScreenP
       )}
       <p className="text-muted-foreground text-sm max-w-xs">
         {pct === 100
-          ? "Perfect score — outstanding work!"
+          ? "Perfect score, outstanding work!"
           : pct >= 70
-            ? "Great effort — keep it up!"
-            : "Keep practicing — you'll get there!"}
+            ? "Great effort, keep it up!"
+            : "Keep practicing, you'll get there!"}
       </p>
       <Button size="lg" onClick={onComplete}>
         <Check size={18} /> Complete Session

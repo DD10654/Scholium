@@ -6,12 +6,15 @@ interface ScholiumLogoProps {
 
 export function ScholiumLogo({ size = 'sm' }: ScholiumLogoProps) {
   return (
-    <div className={`rui-scholium-logo rui-scholium-logo--${size}`}>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-      </svg>
-      <span>Scholium</span>
-    </div>
+    <span className={`rui-scholium-logo rui-scholium-logo--${size}`}>
+      <span className="rui-scholium-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 6 L5 26 L16 23 L27 26 L27 6 L16 9 Z" stroke="currentColor" strokeWidth="1.6" />
+          <path d="M16 9 L16 23" stroke="currentColor" strokeWidth="1.6" opacity="0.55" />
+          <circle cx="16" cy="16" r="1.4" fill="currentColor" />
+        </svg>
+      </span>
+      <span className="rui-scholium-wordmark">Scholium</span>
+    </span>
   );
 }

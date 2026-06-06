@@ -5,25 +5,6 @@ import { NotesCanvas } from '../Notes/NotesCanvas';
 import './MainLayout.css';
 import { useProject } from '../../contexts/ProjectContext';
 import type { Camera } from '../../types';
-import { useTourStyles } from '@repo/ui';
-import { useTour } from '../../useTour';
-import { Joyride, type EventData, STATUS } from 'react-joyride';
-
-const EDITOR_TOUR_STEPS = [
-    {
-        target: '[data-tour="poem-panel"]',
-        title: 'The Poem Canvas',
-        content: 'Paste or type your poem here. This is the centre of your annotation workspace.',
-        placement: 'right' as const,
-        disableBeacon: true,
-    },
-    {
-        target: '[data-tour="select-hint"]',
-        title: 'Create Annotations',
-        content: 'Select any text in the poem and click "+ Note" to create a linked annotation. Tour complete — happy annotating!',
-        placement: 'right' as const,
-    },
-];
 
 interface MainLayoutProps {
     onBackToLanding: () => void;
@@ -36,12 +17,6 @@ export function MainLayout({ onBackToLanding }: MainLayoutProps) {
     const { viewState, setViewState } = useProject();
     const [editorRef, setEditorRef] = React.useState<HTMLDivElement | null>(null);
     const [isPanning, setIsPanning] = useState(false);
-    const { completed: editorTourDone, complete: completeEditorTour } = useTour('poetry-notes-editor');
-    const editorTourStyles = useTourStyles();
-
-    function handleEditorTourCallback({ status }: EventData) {
-        if (status === STATUS.FINISHED || status === STATUS.SKIPPED) completeEditorTour();
-    }
     const viewportRef = useRef<HTMLDivElement>(null);
     const lastPointerRef = useRef({ x: 0, y: 0 });
 
@@ -125,15 +100,6 @@ export function MainLayout({ onBackToLanding }: MainLayoutProps) {
 
     return (
         <div className="main-layout">
-            <Joyride
-                steps={EDITOR_TOUR_STEPS}
-                run={!editorTourDone}
-                continuous
-                onEvent={handleEditorTourCallback}
-                options={{ showProgress: true, buttons: ['back', 'primary', 'skip'] }}
-                styles={editorTourStyles}
-                locale={{ last: 'Done' }}
-            />
             <Header onBackToLanding={onBackToLanding} />
 
             <div
@@ -157,10 +123,10 @@ export function MainLayout({ onBackToLanding }: MainLayoutProps) {
                     </div>
 
                     {/* Poem editor — centered via margin: auto */}
-                    <div className="poem-panel" data-tour="poem-panel">
+                    <div className="poem-panel">
                         <div className="panel-header">
                             <h2>Poem</h2>
-                            <span className="panel-hint" data-tour="select-hint">Select text to create notes</span>
+                            <span className="panel-hint">Select text to create notes</span>
                         </div>
                         <div className="panel-content">
                             <PoemEditor onEditorRef={setEditorRef} />

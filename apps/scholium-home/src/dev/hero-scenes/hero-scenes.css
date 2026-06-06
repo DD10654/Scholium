@@ -1,0 +1,364 @@
+/* Hero scenes — dev-only "signature moment" mockups captured to PNG and used
+ * as the app-card screenshots on the home page. Each scene renders inside a
+ * fixed 1600×1120 frame; keep focal content within a centred safe area because
+ * AppCard crops the resulting image with object-cover / object-center.
+ *
+ * Styling reuses the shared palette from @repo/ui tokens.css (IBM Plex Sans,
+ * indigo --primary, amber --accent, green --success). */
+
+.hero-scene {
+  width: 1600px;
+  height: 1120px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  font-family: var(--font-body);
+  color: hsl(var(--foreground));
+}
+
+/* ── Language Hub — single flashcard mid-study ──────────────────────────── */
+.hs-language {
+  background:
+    radial-gradient(120% 120% at 50% 0%, hsl(var(--primary) / 0.12) 0%, hsl(var(--primary) / 0.04) 55%, hsl(var(--background)) 100%);
+}
+.hs-language .hs-deck {
+  position: relative;
+  width: 760px;
+  height: 520px;
+}
+.hs-language .hs-card {
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 56px 60px;
+  display: flex;
+  flex-direction: column;
+}
+.hs-language .hs-card--behind {
+  transform: translate(26px, 30px) rotate(4deg);
+  opacity: 0.5;
+  box-shadow: var(--shadow-card);
+}
+.hs-language .hs-card--front {
+  z-index: 2;
+}
+.hs-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+  border: 1px solid hsl(var(--primary) / 0.3);
+}
+.hs-language .hs-front {
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: auto 0 0;
+}
+.hs-language .hs-divider {
+  height: 1px;
+  background: var(--color-rule);
+  margin: 26px 0 22px;
+}
+.hs-language .hs-back {
+  font-size: 44px;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+.hs-progress {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.hs-progress .hs-track {
+  flex: 1;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: hsl(var(--primary) / 0.12);
+  overflow: hidden;
+}
+.hs-progress .hs-fill {
+  height: 100%;
+  width: 60%;
+  border-radius: var(--radius-pill);
+  background: hsl(var(--primary));
+}
+.hs-progress .hs-count {
+  font-size: 24px;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Recall — four-pass rail + one recall moment ────────────────────────── */
+.hs-recall {
+  background:
+    radial-gradient(120% 120% at 50% 0%, hsl(var(--accent) / 0.12) 0%, hsl(var(--accent) / 0.04) 55%, hsl(var(--background)) 100%);
+  flex-direction: column;
+  gap: 48px;
+  padding: 0 120px;
+}
+.hs-rail {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.hs-pass {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 26px;
+  border-radius: var(--radius-pill);
+  font-size: 26px;
+  font-weight: 600;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  color: hsl(var(--muted-foreground));
+}
+.hs-pass .hs-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  background: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+.hs-pass--done {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--success) / 0.4);
+  background: hsl(var(--success) / 0.08);
+}
+.hs-pass--done .hs-dot {
+  background: hsl(var(--success));
+  color: #fff;
+}
+.hs-pass--active {
+  color: hsl(var(--foreground));
+  border-color: hsl(var(--accent));
+  background: hsl(var(--accent) / 0.12);
+  box-shadow: 0 0 0 4px hsl(var(--accent) / 0.18);
+}
+.hs-pass--active .hs-dot {
+  background: hsl(var(--accent));
+  color: #fff;
+}
+.hs-recall .hs-rcard {
+  width: 100%;
+  max-width: 920px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 52px 56px;
+}
+.hs-recall .hs-term {
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.hs-recall .hs-def {
+  font-size: 32px;
+  line-height: 1.5;
+  color: hsl(var(--muted-foreground));
+  margin: 20px 0 40px;
+}
+.hs-recall .hs-confidence {
+  display: flex;
+  gap: 16px;
+}
+.hs-conf {
+  flex: 1;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 18px 0;
+  border-radius: var(--radius-md);
+  background: hsl(var(--secondary));
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--border));
+}
+.hs-conf--pick {
+  background: hsl(var(--accent));
+  color: #fff;
+  border-color: hsl(var(--accent));
+  box-shadow: var(--shadow-accent);
+}
+
+/* ── Poetry Notes — annotated stanza + margin note ──────────────────────── */
+.hs-poetry {
+  background: hsl(var(--background));
+}
+.hs-poetry .hs-stage {
+  position: relative;
+  width: 1040px;
+  display: flex;
+  gap: 56px;
+  align-items: center;
+}
+.hs-poetry .hs-poem {
+  flex: 1;
+}
+.hs-poetry .hs-poem-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 32px;
+}
+.hs-poetry .hs-line {
+  font-size: 44px;
+  line-height: 1.7;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.hs-mark {
+  border-radius: 6px;
+  padding: 2px 10px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.hs-mark--rose { background: #e9456033; box-shadow: inset 0 -3px 0 #e94560; }
+.hs-mark--teal { background: #00f5d433; box-shadow: inset 0 -3px 0 #07b7a0; }
+.hs-poetry .hs-note {
+  position: relative;
+  width: 320px;
+  flex: 0 0 320px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-left: 5px solid #e94560;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  padding: 32px 34px;
+}
+.hs-poetry .hs-note-eyebrow {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e94560;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.hs-poetry .hs-note-body {
+  font-size: 24px;
+  line-height: 1.55;
+  color: hsl(var(--foreground));
+}
+.hs-poetry .hs-connector {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* ── Past Papers — Mathematics chapters with QP / MS links ───────────────── */
+.hs-papers {
+  background:
+    radial-gradient(120% 120% at 50% 0%, hsl(var(--accent) / 0.1) 0%, hsl(var(--background)) 60%);
+}
+.hs-papers .hs-papers-inner {
+  width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+.hs-papers .hs-crumbs {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+.hs-papers .hs-pp-title {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  margin-top: 8px;
+}
+.hs-papers .hs-pp-sub {
+  font-size: 24px;
+  color: hsl(var(--muted-foreground));
+  margin-top: 4px;
+}
+.hs-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 26px;
+  width: 100%;
+}
+.hs-chap {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 26px 28px;
+}
+.hs-chap .hs-chap-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.hs-chap .hs-chap-num {
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  background: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}
+.hs-chap .hs-chap-name {
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.hs-chap .hs-chap-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.hs-plink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  border: 1px solid;
+  padding: 15px 16px;
+  font-size: 20px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.hs-plink .hs-plink-label { flex: 1; }
+.hs-plink .hs-dl { opacity: 0.55; flex: 0 0 auto; }
+.hs-plink--qp {
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.08);
+  border-color: hsl(var(--primary) / 0.2);
+}
+.hs-plink--ms {
+  color: hsl(var(--accent));
+  background: hsl(var(--accent) / 0.08);
+  border-color: hsl(var(--accent) / 0.2);
+}

@@ -208,7 +208,7 @@ const FolderPage = () => {
       toast.error("Failed to delete folder");
       return;
     }
-    toast.success("Folder deleted — sets preserved");
+    toast.success("Folder deleted, sets preserved");
     navigate("/");
   };
 
@@ -290,7 +290,7 @@ const FolderPage = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete this folder?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      The folder "{folder.name}" will be deleted. The sets inside it will not be deleted — they will become uncategorized.
+                      The folder "{folder.name}" will be deleted. The sets inside it will not be deleted, they will become uncategorized.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
