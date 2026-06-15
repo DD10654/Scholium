@@ -96,10 +96,10 @@ Follow these steps to run the project locally on your machine.
 - A Cloudflare R2 Bucket
 
 ### Installation
-1. Clone the repo: ```bash git clone https://github.com/AaravAgarwal1511/Scholium```
+1. Clone the repo: ```git clone https://github.com/AaravAgarwal1511/Scholium```
 2. Navigate into the directory
-3. Install dependencies: "pnpm install"
-4. Start the local development server: "pnpm dev"
+3. Install dependencies: ```pnpm install```
+4. Start the local development server: ```pnpm dev```
 
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/AaravAgarwal1511/Scholium/issues).
