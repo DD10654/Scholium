@@ -36,7 +36,7 @@ export default function Settings() {
   };
 
   if (loadingAuth) return null;
-  if (!user) { navigate("/login"); return null; }
+  if (!user) { navigate("/signin"); return null; }
 
   return (
     <SettingsLayout onBack={() => navigate("/")}>
@@ -115,7 +115,7 @@ export default function Settings() {
         variant="danger"
         action={
           <Button variant="destructive" size="sm"
-            onClick={async () => { await logout(); navigate("/login"); }}>
+            onClick={async () => { await logout(); navigate("/signin"); }}>
             Log Out
           </Button>
         }

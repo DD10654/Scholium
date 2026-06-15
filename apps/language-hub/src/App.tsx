@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { ScholiumNavbar } from "@repo/ui";
+import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,6 +23,9 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+// This app's own row in scholium_apps. Ids are UUIDs (not slugs), so match by URL.
+const OWN_APP_URL = "https://language-flash-hub.vercel.app";
 
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
@@ -42,12 +45,13 @@ async function loadScholiumApps(): Promise<AppLink[]> {
 function NavbarWired({ apps }: { apps: AppLink[] }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const homeUrl = apps.find((a) => a.id === "scholium-home")?.url ?? "";
   return (
     <ScholiumNavbar
       apps={apps}
-      homeUrl={homeUrl}
+      homeUrl={SCHOLIUM_HOME_URL}
       user={user ? { email: user.email ?? "" } : null}
+      onSignIn={() => navigate("/signin")}
+      onSignUp={() => navigate("/signup")}
       onSignOut={signOut}
       onSettings={() => navigate("/settings")}
     />
@@ -66,7 +70,8 @@ function FadeRoutes({ description }: { description?: string | null }) {
         <Route path="/study/:id" element={<Study />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/practice-setup" element={<PracticeSetup />} />
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/signin" element={<Auth defaultMode="signin" />} />
+        <Route path="/signup" element={<Auth defaultMode="signup" />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
@@ -82,7 +87,7 @@ const App = () => {
     loadScholiumApps().then(setApps);
   }, []);
 
-  const ownDescription = apps.find((a) => a.id === "language-hub")?.description ?? null;
+  const ownDescription = apps.find((a) => a.url === OWN_APP_URL)?.description ?? null;
 
   return (
     <QueryClientProvider client={queryClient}>

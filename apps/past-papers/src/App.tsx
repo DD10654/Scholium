@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import type { User } from "@supabase/supabase-js";
-import { ScholiumNavbar } from "@repo/ui";
+import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import SubjectsPage from "@/pages/SubjectsPage";
 import Demo from "@/pages/Demo";
 import ComponentsPage from "@/pages/ComponentsPage";
 import ChaptersPage from "@/pages/ChaptersPage";
 import GeneratePaperPage from "@/pages/GeneratePaperPage";
 import SettingsPage from "@/pages/Settings";
+import Auth from "@/pages/Auth";
+import ResetPassword from "@/pages/ResetPassword";
+
+// This app's own row in scholium_apps. Ids are UUIDs (not slugs), so match by URL.
+const OWN_APP_URL = "https://past-papers-app.vercel.app";
 
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
@@ -27,16 +32,19 @@ async function loadScholiumApps(): Promise<AppLink[]> {
   return (first.data ?? []) as AppLink[];
 }
 
-function NavbarWired({ apps, user }: { apps: AppLink[]; user: User | null }) {
+function NavbarWired({ apps }: { apps: AppLink[] }) {
   const navigate = useNavigate();
-  const homeUrl = apps.find((a) => a.id === "scholium-home")?.url ?? "";
+  const { user, signOut } = useAuth();
   return (
     <ScholiumNavbar
       apps={apps}
-      homeUrl={homeUrl}
+      homeUrl={SCHOLIUM_HOME_URL}
       user={user ? { email: user.email ?? "" } : null}
+      onSignIn={() => navigate("/signin")}
+      onSignUp={() => navigate("/signup")}
       onSignOut={async () => {
-        await supabase.auth.signOut();
+        await signOut();
+        navigate("/");
       }}
       onSettings={() => navigate("/settings")}
     />
@@ -45,38 +53,34 @@ function NavbarWired({ apps, user }: { apps: AppLink[]; user: User | null }) {
 
 export default function App() {
   const [apps, setApps] = useState<AppLink[]>([]);
-  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     loadScholiumApps().then(setApps);
   }, []);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => data.subscription.unsubscribe();
-  }, []);
-
-  const ownDescription = apps.find((a) => a.id === "past-papers")?.description ?? null;
+  const ownDescription = apps.find((a) => a.url === OWN_APP_URL)?.description ?? null;
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/demo" element={<Demo />} />
-        <Route path="*" element={<MainRoutes apps={apps} user={user} ownDescription={ownDescription} />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/demo" element={<Demo />} />
+          <Route path="*" element={<MainRoutes apps={apps} ownDescription={ownDescription} />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
-function MainRoutes({ apps, user, ownDescription }: { apps: AppLink[]; user: User | null; ownDescription: string | null }) {
+function MainRoutes({ apps, ownDescription }: { apps: AppLink[]; ownDescription: string | null }) {
   return (
     <>
-      <NavbarWired apps={apps} user={user} />
+      <NavbarWired apps={apps} />
       <Routes>
         <Route path="/" element={<SubjectsPage description={ownDescription} />} />
+        <Route path="/signin" element={<Auth defaultMode="signin" />} />
+        <Route path="/signup" element={<Auth defaultMode="signup" />} />
+        <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/generate" element={<GeneratePaperPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/:subject" element={<ComponentsPage />} />

@@ -28,6 +28,11 @@ export interface ScholiumNavbarProps {
   user?: { email: string } | null;
   /** Called when the user picks "Sign out" from the account menu. */
   onSignOut?: () => void | Promise<void>;
+  /** When provided, the Login button calls this (SPA navigation) instead of
+   *  linking to `${homeUrl}/signin`. Use for apps that host their own /signin route. */
+  onSignIn?: () => void;
+  /** When provided, the "Join now" button calls this instead of linking to `${homeUrl}/signup`. */
+  onSignUp?: () => void;
 }
 
 function sameOrigin(url: string, origin: string): boolean {
@@ -43,6 +48,8 @@ export function ScholiumNavbar({
   onPickSubject,
   user,
   onSignOut,
+  onSignIn,
+  onSignUp,
 }: ScholiumNavbarProps) {
   const [toolsOpen, setToolsOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -317,8 +324,16 @@ export function ScholiumNavbar({
             </div>
           ) : (
             <>
-              <a href={signinHref} className="rui-navbar-btn rui-navbar-btn--ghost">Login</a>
-              <a href={signupHref} className="rui-navbar-btn rui-navbar-btn--primary">Join now</a>
+              {onSignIn ? (
+                <button type="button" onClick={onSignIn} className="rui-navbar-btn rui-navbar-btn--ghost">Login</button>
+              ) : (
+                <a href={signinHref} className="rui-navbar-btn rui-navbar-btn--ghost">Login</a>
+              )}
+              {onSignUp ? (
+                <button type="button" onClick={onSignUp} className="rui-navbar-btn rui-navbar-btn--primary">Join now</button>
+              ) : (
+                <a href={signupHref} className="rui-navbar-btn rui-navbar-btn--primary">Join now</a>
+              )}
             </>
           )}
         </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProjectProvider, useProject } from './contexts/ProjectContext';
-import { ScholiumNavbar } from '@repo/ui';
+import { ScholiumNavbar, SCHOLIUM_HOME_URL } from '@repo/ui';
 import type { AppLink } from '@repo/ui';
 import '@repo/ui/scholium-navbar.css';
 import { supabase } from './integrations/supabase/client';
@@ -12,6 +12,9 @@ import { MainLayout } from './components/Layout/MainLayout';
 import { ResetPasswordView } from './components/ResetPasswordView';
 import Demo from './pages/Demo';
 import './App.css';
+
+// This app's own row in scholium_apps. Ids are UUIDs (not slugs), so match by URL.
+const OWN_APP_URL = 'https://poetrynotes.vercel.app';
 
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
@@ -68,14 +71,13 @@ function AppContent() {
     setCurrentView('landing');
   };
 
-  const homeUrl = apps.find((a) => a.id === 'scholium-home')?.url ?? '';
-  const ownDescription = apps.find((a) => a.id === 'poetry-notes')?.description ?? null;
+  const ownDescription = apps.find((a) => a.url === OWN_APP_URL)?.description ?? null;
 
   return (
     <div className="app">
       <ScholiumNavbar
         apps={apps}
-        homeUrl={homeUrl}
+        homeUrl={SCHOLIUM_HOME_URL}
         user={user ? { email: user.email ?? '' } : null}
         onSignOut={handleSignOut}
         onSettings={() => setCurrentView('settings')}

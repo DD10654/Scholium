@@ -2,11 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { AuthCard } from "@repo/ui";
 import { supabase } from "@/integrations/supabase/client";
 
-interface LoginProps {
+interface AuthProps {
   defaultMode?: "signin" | "signup";
 }
 
-export default function Login({ defaultMode = "signin" }: LoginProps) {
+export default function Auth({ defaultMode = "signin" }: AuthProps) {
   const navigate = useNavigate();
 
   async function handleSignIn(email: string, password: string): Promise<string | null> {

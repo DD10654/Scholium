@@ -41,7 +41,7 @@ export default function Study() {
   const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate("/signin"); return; }
   }, [user, navigate]);
 
   useEffect(() => {

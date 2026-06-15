@@ -36,7 +36,7 @@ export default function Demo() {
       title="French Practice"
       headerActions={
         <a
-          href="/auth"
+          href="/signup"
           className="text-sm font-semibold text-primary hover:underline whitespace-nowrap"
         >
           Sign up to save →
@@ -46,7 +46,7 @@ export default function Demo() {
       completionSubtitle="That's a taste of Language Hub"
       completionActions={
         <>
-          <a href="/auth">
+          <a href="/signup">
             <Button variant="hero">Create free account</Button>
           </a>
           <a href="/demo">

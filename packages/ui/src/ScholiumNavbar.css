@@ -224,6 +224,7 @@
   white-space: nowrap;
   transition: background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
   border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .rui-navbar-btn--ghost {

@@ -50,7 +50,7 @@ export default function Demo() {
               <span className="font-semibold text-foreground">Preview</span> · no account needed
             </p>
             <a
-              href="/login"
+              href="/signup"
               className="text-sm font-semibold text-primary hover:underline whitespace-nowrap"
             >
               Sign up to track your passes →
@@ -68,7 +68,7 @@ export default function Demo() {
       }
       doneActions={
         <>
-          <a href="/login">
+          <a href="/signup">
             <Button size="lg" className="w-full sm:w-auto">
               Create free account
               <ArrowRight className="ml-2 h-4 w-4" />

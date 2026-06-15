@@ -201,7 +201,7 @@ export default function Home({ description }: { description?: string | null } = 
   }
 
   if (!user) {
-    navigate("/login");
+    navigate("/signin");
     return null;
   }
 

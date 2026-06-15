@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from
 import { Loader2 } from "lucide-react";
 import { AppProvider, useApp } from "@/contexts/AppContext";
 import { Toaster } from "@/components/ui/sonner";
-import { ScholiumNavbar } from "@repo/ui";
+import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,9 @@ import Study from "@/pages/Study";
 import PracticeSection from "@/pages/PracticeSection";
 import Settings from "@/pages/Settings";
 import ResetPassword from "@/pages/ResetPassword";
+
+// This app's own row in scholium_apps. Ids are UUIDs (not slugs), so match by URL.
+const OWN_APP_URL = "https://recall-master-app.vercel.app";
 
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
@@ -39,7 +42,7 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
       </div>
     );
   }
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/signin" replace />;
   return <>{children}</>;
 }
 
@@ -59,15 +62,16 @@ function RedirectIfAuthed({ children }: { children: React.ReactNode }) {
 function NavbarWired({ apps }: { apps: AppLink[] }) {
   const { supabaseUser, logout } = useApp();
   const navigate = useNavigate();
-  const homeUrl = apps.find((a) => a.id === "scholium-home")?.url ?? "";
   return (
     <ScholiumNavbar
       apps={apps}
-      homeUrl={homeUrl}
+      homeUrl={SCHOLIUM_HOME_URL}
       user={supabaseUser ? { email: supabaseUser.email ?? "" } : null}
+      onSignIn={() => navigate("/signin")}
+      onSignUp={() => navigate("/signup")}
       onSignOut={async () => {
         await logout();
-        navigate("/login");
+        navigate("/signin");
       }}
       onSettings={() => navigate("/settings")}
     />
@@ -80,10 +84,18 @@ function FadeRoutes({ description }: { description?: string | null }) {
     <div key={location.key} className="page-fade-in">
       <Routes>
         <Route
-          path="/login"
+          path="/signin"
           element={
             <RedirectIfAuthed>
-              <Login />
+              <Login defaultMode="signin" />
+            </RedirectIfAuthed>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <RedirectIfAuthed>
+              <Login defaultMode="signup" />
             </RedirectIfAuthed>
           }
         />
@@ -133,7 +145,7 @@ export default function App() {
     loadScholiumApps().then(setApps);
   }, []);
 
-  const ownDescription = apps.find((a) => a.id === "recall-app")?.description ?? null;
+  const ownDescription = apps.find((a) => a.url === OWN_APP_URL)?.description ?? null;
 
   return (
     <BrowserRouter>

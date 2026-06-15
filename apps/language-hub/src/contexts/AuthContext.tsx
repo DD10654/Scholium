@@ -69,9 +69,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 return;
             }
 
-            if (!user && location.pathname !== "/auth" && !location.pathname.startsWith("/auth/")) {
-                navigate("/auth");
-            } else if (user && location.pathname === "/auth") {
+            const authPaths = ["/signin", "/signup"];
+            const onAuthPage = authPaths.includes(location.pathname) || location.pathname.startsWith("/auth/");
+            if (!user && !onAuthPage) {
+                navigate("/signin");
+            } else if (user && authPaths.includes(location.pathname)) {
                 navigate("/");
             }
             // Note: authenticated users on /auth/reset-password are NOT redirected
@@ -80,7 +82,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     const signOut = async () => {
         await supabase.auth.signOut();
-        navigate("/auth");
+        navigate("/signin");
     };
 
     return (

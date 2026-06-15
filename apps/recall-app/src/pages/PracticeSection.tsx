@@ -45,7 +45,7 @@ export default function PracticeSection() {
   const [questions, setQuestions] = useState<ChooseQuestion[]>([]);
 
   useEffect(() => {
-    if (!user) navigate("/login");
+    if (!user) navigate("/signin");
   }, [user, navigate]);
 
   useEffect(() => {

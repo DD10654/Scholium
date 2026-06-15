@@ -2,7 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { AuthCard } from "@repo/ui";
 import { supabase } from "@/integrations/supabase/client";
 
-const Auth = () => {
+interface AuthProps {
+    defaultMode?: "signin" | "signup";
+}
+
+const Auth = ({ defaultMode = "signin" }: AuthProps) => {
     const navigate = useNavigate();
 
     async function handleSignIn(email: string, password: string): Promise<string | null> {
@@ -28,6 +32,7 @@ const Auth = () => {
 
     return (
         <AuthCard
+            defaultMode={defaultMode}
             onSignIn={handleSignIn}
             onSignUp={handleSignUp}
             onForgotPassword={handleForgotPassword}
