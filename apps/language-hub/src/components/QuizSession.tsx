@@ -163,7 +163,7 @@ export const QuizSession = ({
               <Trophy className="h-20 w-20 mx-auto text-accent mb-6" />
               <h2 className="text-3xl font-bold font-display mb-2">{completionTitle}</h2>
               <p className="text-xl text-muted-foreground mb-6">{completionSubtitle}</p>
-              <div className="text-6xl font-bold gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-6xl font-bold text-primary mb-2">
                 {percentage}%
               </div>
               <p className="text-muted-foreground mb-8">

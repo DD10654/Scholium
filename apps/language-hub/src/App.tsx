@@ -27,9 +27,9 @@ const queryClient = new QueryClient();
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
     .from("scholium_apps")
-    .select("id, title, url, icon, subjects, description")
+    .select("id, title, url, icon, subjects, description, has_demo, no_login")
     .order("sort_order");
-  if (first.error && /(subjects|description)/i.test(first.error.message)) {
+  if (first.error && /(subjects|description|has_demo|no_login)/i.test(first.error.message)) {
     const fallback = await supabase
       .from("scholium_apps")
       .select("id, title, url, icon")

@@ -7,42 +7,23 @@ import { useAsync } from "@/hooks/useAsync";
 import {
   listSubjects,
   listComponents,
+  listChapters,
   getQuestionsByChapter,
   generatePaper,
+  subjectDisplayName,
 } from "@/lib/papers";
 
 type SelectionMap = {
   [chapterNum: number]: number; // chapter -> question count
 };
 
-// chapter_num in the database matches the position shown here.
-const CHAPTER_NAMES: Record<number, string> = {
-  1:  "Number",
-  2:  "Operations with Numbers",
-  3:  "Using Number",
-  4:  "Angles and Bearings",
-  5:  "Triangles, Quadrilaterals and Polygons",
-  6:  "Indices, Standard Forms and Surds",
-  7:  "Introduction to Algebra",
-  8:  "Simultaneous Linear Equations",
-  9:  "Symmetry, Congruency and Similarity",
-  10: "Pythagoras' Theorem",
-  11: "Coordinate Geometry",
-  12: "Mensuration",
-  13: "Quadratic Expressions",
-  14: "Functions 1",
-  15: "Trigonometry",
-  16: "Circle Properties",
-  17: "Vectors and Transformations",
-  18: "Sets",
-  19: "Descriptive Statistics",
-  20: "Cumulative Frequency Graphs and Linear Regression",
-  21: "Probability",
-  22: "Sequences",
-  23: "Functions 2",
-};
+type ChapterInfo = { number: number; name: string; ids: string[] };
 
-const ALL_CHAPTERS = Object.keys(CHAPTER_NAMES).map(Number);
+// Component label "Paper 2" -> 2 (matches the P<n>- prefix on question ids).
+function paperNumOf(component: string): number {
+  const m = component.match(/(\d+)/);
+  return m ? parseInt(m[1], 10) : 0;
+}
 
 export default function GeneratePaperPage() {
   const navigate = useNavigate();
@@ -51,7 +32,8 @@ export default function GeneratePaperPage() {
     null
   );
   const [selections, setSelections] = useState<SelectionMap>({});
-  const [chapterCounts, setChapterCounts] = useState<Record<number, number>>({});
+  const [chapters, setChapters] = useState<ChapterInfo[]>([]);
+  const [loadingChapters, setLoadingChapters] = useState(false);
   const [includeMarkScheme, setIncludeMarkScheme] = useState(true);
   const [randomize, setRandomize] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -70,26 +52,44 @@ export default function GeneratePaperPage() {
     [selectedSubject]
   );
 
-  // Load available question counts per chapter when component is selected
+  // Load chapters (with their question ids) for the selected subject + paper.
+  // Questions are restricted to the chosen paper via the P<n>- id prefix, so
+  // Paper 1 only ever offers Paper 1 questions, etc.
   useEffect(() => {
-    if (!selectedComponent) return;
-
-    async function loadCounts() {
-      const counts: Record<number, number> = {};
-      const promises = ALL_CHAPTERS.map(async (ch) => {
-        try {
-          const questions = await getQuestionsByChapter(ch);
-          counts[ch] = questions.length;
-        } catch {
-          counts[ch] = 0;
-        }
-      });
-      await Promise.all(promises);
-      setChapterCounts(counts);
+    if (!selectedSubject || !selectedComponent) {
+      setChapters([]);
+      return;
     }
-
-    loadCounts();
-  }, [selectedComponent]);
+    const subject = selectedSubject;
+    const paperNum = paperNumOf(selectedComponent);
+    let cancelled = false;
+    setLoadingChapters(true);
+    (async () => {
+      try {
+        const entries = await listChapters(subject, selectedComponent);
+        const withIds = await Promise.all(
+          entries.map(async (e) => {
+            const qs = await getQuestionsByChapter(subject, paperNum, e.number);
+            return { number: e.number, name: e.name, ids: qs.map((q) => q.id) };
+          })
+        );
+        if (!cancelled) {
+          setChapters(
+            withIds
+              .filter((c) => c.ids.length > 0)
+              .sort((a, b) => a.number - b.number)
+          );
+        }
+      } catch {
+        if (!cancelled) setChapters([]);
+      } finally {
+        if (!cancelled) setLoadingChapters(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedSubject, selectedComponent]);
 
   const handleSubjectSelect = (subject: string) => {
     setSelectedSubject(subject);
@@ -118,9 +118,11 @@ export default function GeneratePaperPage() {
   const selectedChapters = Object.keys(selections).map(Number);
   const totalQuestions = Object.values(selections).reduce((a, b) => a + b, 0);
   const estimatedTime = Math.round(totalQuestions * 2.5);
+  const chapterName = (n: number) =>
+    chapters.find((c) => c.number === n)?.name ?? "Unknown";
 
   const handleGenerate = async () => {
-    if (totalQuestions === 0) {
+    if (!selectedSubject || totalQuestions === 0) {
       setGenerateError("Please select at least one chapter with questions");
       return;
     }
@@ -129,29 +131,22 @@ export default function GeneratePaperPage() {
     setGenerateError(null);
 
     try {
-      // For each selected chapter, fetch questions and randomly pick the requested count
+      // For each selected chapter, randomly pick the requested number of ids.
       const selectedQuestionIds: string[] = [];
 
       for (const chapter of selectedChapters) {
-        const requested = selections[chapter];
-        const allQuestions = await getQuestionsByChapter(chapter);
-
-        if (allQuestions.length === 0) {
-          throw new Error(
-            `No questions available for Chapter ${chapter}`
-          );
+        const info = chapters.find((c) => c.number === chapter);
+        if (!info || info.ids.length === 0) {
+          throw new Error(`No questions available for Chapter ${chapter}`);
         }
-
-        // Shuffle and pick the requested count
-        const shuffled = [...allQuestions].sort(() => Math.random() - 0.5);
-        const picked = shuffled.slice(
-          0,
-          Math.min(requested, shuffled.length)
+        const requested = selections[chapter];
+        const shuffled = [...info.ids].sort(() => Math.random() - 0.5);
+        selectedQuestionIds.push(
+          ...shuffled.slice(0, Math.min(requested, shuffled.length))
         );
-        selectedQuestionIds.push(...picked.map((q) => q.id));
       }
 
-      const pdf = await generatePaper(selectedQuestionIds, {
+      const pdf = await generatePaper(selectedSubject, selectedQuestionIds, {
         includeMarkScheme,
         randomize,
       });
@@ -161,7 +156,7 @@ export default function GeneratePaperPage() {
       const link = document.createElement("a");
       link.href = url;
       const timestamp = new Date().toISOString().slice(0, 10);
-      link.download = `${selectedSubject}-${selectedComponent}-${timestamp}.pdf`;
+      link.download = `${subjectDisplayName(selectedSubject)}-${selectedComponent}-${timestamp}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -234,7 +229,7 @@ export default function GeneratePaperPage() {
                       : "hsl(var(--foreground))",
                 }}
               >
-                {subject}
+                {subjectDisplayName(subject)}
               </button>
             ))}
           </div>
@@ -306,82 +301,92 @@ export default function GeneratePaperPage() {
             Choose Chapters & Question Counts
           </h2>
 
-          <div className="space-y-2">
-            {ALL_CHAPTERS.map((chapter) => {
-              const available = chapterCounts[chapter] ?? 0;
-              if (available === 0) return null;
+          {loadingChapters ? (
+            <div className="space-y-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-20 rounded-xl bg-card animate-pulse" />
+              ))}
+            </div>
+          ) : chapters.length === 0 ? (
+            <EmptyState
+              title="No questions available"
+              hint="This paper has no questions ready for generation yet."
+            />
+          ) : (
+            <div className="space-y-2">
+              {chapters.map((ch) => {
+                const available = ch.ids.length;
+                const isSelected = selections.hasOwnProperty(ch.number);
+                const questionCount = selections[ch.number] || 0;
 
-              const isSelected = selections.hasOwnProperty(chapter);
-              const questionCount = selections[chapter] || 0;
-              const chapterName = CHAPTER_NAMES[chapter];
-
-              return (
-                <div
-                  key={chapter}
-                  className="rounded-xl border-2 p-4 transition-all"
-                  style={{
-                    borderColor: isSelected
-                      ? "hsl(var(--success))"
-                      : "hsl(var(--border))",
-                    backgroundColor: isSelected
-                      ? "hsl(var(--success) / 0.04)"
-                      : "transparent",
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-3 flex-1">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={(e) => {
-                          handleChapterToggle(
-                            chapter,
-                            e.target.checked ? Math.min(5, available) : 0
-                          );
-                        }}
-                        className="w-5 h-5 rounded mt-0.5 cursor-pointer"
-                        aria-label={`Select ${chapterName}`}
-                      />
-                      <div>
-                        <label className="font-display font-semibold text-foreground block mb-1">
-                          Chapter {chapter}: {chapterName}
-                        </label>
-                        <p className="text-xs text-muted-foreground">
-                          {available} questions available
-                        </p>
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <div className="flex items-center gap-2">
-                        <label className="text-xs font-medium text-muted-foreground">
-                          Questions:
-                        </label>
+                return (
+                  <div
+                    key={ch.number}
+                    className="rounded-xl border-2 p-4 transition-all"
+                    style={{
+                      borderColor: isSelected
+                        ? "hsl(var(--success))"
+                        : "hsl(var(--border))",
+                      backgroundColor: isSelected
+                        ? "hsl(var(--success) / 0.04)"
+                        : "transparent",
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1">
                         <input
-                          type="number"
-                          min="1"
-                          max={available}
-                          value={questionCount}
+                          type="checkbox"
+                          checked={isSelected}
                           onChange={(e) => {
-                            const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val) && val > 0) {
-                              handleChapterToggle(
-                                chapter,
-                                Math.min(val, available)
-                              );
-                            }
+                            handleChapterToggle(
+                              ch.number,
+                              e.target.checked ? Math.min(5, available) : 0
+                            );
                           }}
-                          className="w-16 px-2 py-1 rounded border border-border bg-background text-foreground text-center text-sm font-medium focus:outline-none focus:border-success"
+                          className="w-5 h-5 rounded mt-0.5 cursor-pointer"
+                          aria-label={`Select ${ch.name}`}
                         />
-                        <span className="text-xs text-muted-foreground">
-                          / {available}
-                        </span>
+                        <div>
+                          <label className="font-display font-semibold text-foreground block mb-1">
+                            Chapter {ch.number}: {ch.name}
+                          </label>
+                          <p className="text-xs text-muted-foreground">
+                            {available} questions available
+                          </p>
+                        </div>
                       </div>
-                    )}
+                      {isSelected && (
+                        <div className="flex items-center gap-2">
+                          <label className="text-xs font-medium text-muted-foreground">
+                            Questions:
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max={available}
+                            value={questionCount}
+                            onChange={(e) => {
+                              const val = parseInt(e.target.value, 10);
+                              if (!isNaN(val) && val > 0) {
+                                handleChapterToggle(
+                                  ch.number,
+                                  Math.min(val, available)
+                                );
+                              }
+                            }}
+                            className="w-16 px-2 py-1 rounded border border-border bg-background text-foreground text-center text-sm font-medium focus:outline-none focus:border-success"
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            / {available}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </section>
       )}
 
@@ -445,7 +450,7 @@ export default function GeneratePaperPage() {
                 {[...selectedChapters].sort((a, b) => a - b).map((ch) => (
                   <div key={ch} className="flex justify-between">
                     <span>
-                      Chapter {ch}: {CHAPTER_NAMES[ch] ?? "Unknown"}
+                      Chapter {ch}: {chapterName(ch)}
                     </span>
                     <span className="font-medium text-foreground">
                       {selections[ch]} Q

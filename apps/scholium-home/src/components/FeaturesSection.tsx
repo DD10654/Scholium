@@ -28,10 +28,11 @@ interface FeaturesCopy {
   tiles: Principle[];
 }
 
-const CTAS: Record<"signup" | "tools" | "subjects", Cta> = {
+const CTAS: Record<"signup" | "tools" | "subjects" | "memoryScience", Cta> = {
   signup: { label: "Create free account", href: "/signup" },
   tools: { label: "View the apps", sectionId: "tools" },
   subjects: { label: "Select your subjects", sectionId: "subjects" },
+  memoryScience: { label: "See the research", href: "/memory-science" },
 };
 
 function getCopy(persona: Persona | null): FeaturesCopy {
@@ -52,7 +53,7 @@ function getCopy(persona: Persona | null): FeaturesCopy {
           body: "Each tool is backed by a specific memory principle — spaced repetition, active recall, elaborative interrogation. Nothing is included for the sake of it.",
           Icon: Brain,
           accentVar: "--accent",
-          cta: CTAS.tools,
+          cta: CTAS.memoryScience,
         },
         {
           title: "No feeds. No streaks.",
@@ -81,7 +82,7 @@ function getCopy(persona: Persona | null): FeaturesCopy {
           body: "Every tool is built on how memory forms: spaced practice, active retrieval, and meaningful connections. No tricks, no shortcuts.",
           Icon: Brain,
           accentVar: "--accent",
-          cta: CTAS.tools,
+          cta: CTAS.memoryScience,
         },
         {
           title: "No feeds. No streaks.",
@@ -109,7 +110,7 @@ function getCopy(persona: Persona | null): FeaturesCopy {
         body: "Spaced repetition for vocabulary. Active recall passes for study. Connected marginalia for poetry. Each tool earns its place.",
         Icon: Brain,
         accentVar: "--accent",
-        cta: CTAS.tools,
+        cta: CTAS.memoryScience,
       },
       {
         title: "No feeds. No streaks.",

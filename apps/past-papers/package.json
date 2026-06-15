@@ -10,7 +10,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "upload:questions": "node --env-file=.env scripts/upload-questions.js"
+    "upload:questions": "node --env-file=.env scripts/upload-questions.js",
+    "index:papers": "node --env-file=.env scripts/build-paper-index.js"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",

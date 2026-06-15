@@ -1,24 +1,22 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import { createClient } from '@supabase/supabase-js';
-import fs from 'fs/promises';
-import path from 'path';
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error(
-    'Missing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variables'
-  );
+// Lazily create the Supabase client so merely importing this module never throws
+// (env is present at runtime in both the dev server and the serverless function).
+function getSupabase() {
+  const url = process.env.VITE_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error('Missing VITE_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  }
+  return createClient(url, key, { auth: { persistSession: false } });
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey, {
-  auth: { persistSession: false },
-});
-
-const PAST_PAPERS_DIR =
-  process.env.PAST_PAPERS_DIR ||
-  '/Users/aarav/Desktop/Past Papers/0607 (International Mathematics)';
+// Source PDFs + index JSON are fetched through a "loader" so the same composition
+// code works from local disk (dev) or R2 over HTTP (prod). A loader exposes:
+//   loadIndex(paperNum, kind)        -> parsed JSON object
+//   loadPdfBytes(paperNum, kind, stem) -> Uint8Array | Buffer
+// See server/loaders.js.
 
 // A4 page geometry (PDF points). Mirrors PAGE_W / PAGE_H in _build_topicals.py.
 const PAGE_W = 595.276;
@@ -42,13 +40,11 @@ function makeCache() {
   };
 }
 
-async function loadIndex(cache, paperNum, kind) {
+async function loadIndex(cache, loader, paperNum, kind) {
   const key = `${paperNum}/${kind}`;
   if (cache.indexes.has(key)) return cache.indexes.get(key);
 
-  const fileName = kind === 'questions' ? '_questions.json' : '_mark_schemes.json';
-  const filePath = path.join(PAST_PAPERS_DIR, `Paper ${paperNum}`, fileName);
-  const raw = JSON.parse(await fs.readFile(filePath, 'utf-8'));
+  const raw = await loader.loadIndex(paperNum, kind);
 
   const idx = new Map();
   for (const [stem, entry] of Object.entries(raw)) {
@@ -60,16 +56,10 @@ async function loadIndex(cache, paperNum, kind) {
   return idx;
 }
 
-async function loadSourcePdf(cache, paperNum, kind, stem) {
+async function loadSourcePdf(cache, loader, paperNum, kind, stem) {
   const cacheKey = `${paperNum}/${kind}/${stem}`;
   if (cache.pdfs.has(cacheKey)) return cache.pdfs.get(cacheKey);
-  const filePath = path.join(
-    PAST_PAPERS_DIR,
-    `Paper ${paperNum}`,
-    kind,
-    `${stem}.pdf`
-  );
-  const bytes = await fs.readFile(filePath);
+  const bytes = await loader.loadPdfBytes(paperNum, kind, stem);
   const pdf = await PDFDocument.load(bytes);
   cache.pdfs.set(cacheKey, pdf);
   return pdf;
@@ -251,7 +241,7 @@ class PageLayout {
   }
 }
 
-async function renderSection(layout, cache, items, kind) {
+async function renderSection(layout, cache, items, kind, loader) {
   // Group by (paperNum, stem).
   const grouped = new Map();
   for (const it of items) {
@@ -267,7 +257,7 @@ async function renderSection(layout, cache, items, kind) {
   const indexesByPaperNum = new Map();
   for (const { paperNum } of grouped.values()) {
     if (!indexesByPaperNum.has(paperNum)) {
-      indexesByPaperNum.set(paperNum, await loadIndex(cache, paperNum, kind));
+      indexesByPaperNum.set(paperNum, await loadIndex(cache, loader, paperNum, kind));
     }
   }
 
@@ -306,7 +296,7 @@ async function renderSection(layout, cache, items, kind) {
     layout.queueBanner(label, qNums);
 
     const skippable = new Set(meta[skipKey] ?? []);
-    const srcDoc = await loadSourcePdf(cache, paperNum, kind, stem);
+    const srcDoc = await loadSourcePdf(cache, loader, paperNum, kind, stem);
 
     for (const q of qNums) {
       const record = entry.byQ.get(q);
@@ -324,12 +314,17 @@ async function renderSection(layout, cache, items, kind) {
   }
 }
 
-export async function composePdf(questionIds, includeMarkScheme = true) {
-  console.log(`📦 Composing PDF for ${questionIds.length} questions (MS=${includeMarkScheme})`);
+export async function composePdf(questionIds, includeMarkScheme = true, subject, loader) {
+  if (!subject) throw new Error('composePdf requires a subject');
+  if (!loader) throw new Error('composePdf requires a loader');
+  console.log(`📦 Composing PDF for ${questionIds.length} questions (subject=${subject}, MS=${includeMarkScheme})`);
+
+  const supabase = getSupabase();
 
   const { data: rows, error } = await supabase
     .from('questions_metadata')
     .select('id, paper, question_number, y_start, y_end, ms_y_start, ms_y_end')
+    .eq('subject', subject)
     .in('id', questionIds);
   if (error) throw new Error(`Supabase fetch failed: ${error.message}`);
   if (!rows || rows.length === 0) throw new Error('No metadata found for selected questions');
@@ -362,7 +357,7 @@ export async function composePdf(questionIds, includeMarkScheme = true) {
 
   // Section 1 — Questions
   layout.sectionHeader('Questions');
-  await renderSection(layout, cache, items, 'questions');
+  await renderSection(layout, cache, items, 'questions', loader);
 
   // Section 2 — Mark Scheme (only items with MS coords)
   let msCount = 0;
@@ -370,7 +365,7 @@ export async function composePdf(questionIds, includeMarkScheme = true) {
     const msItems = items.filter((it) => it.msYStart != null && it.msYEnd != null);
     if (msItems.length > 0) {
       layout.sectionHeader('Mark Scheme');
-      await renderSection(layout, cache, msItems, 'mark_schemes');
+      await renderSection(layout, cache, msItems, 'mark_schemes', loader);
       msCount = msItems.length;
     }
   }

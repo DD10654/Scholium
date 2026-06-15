@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import FolderCard from "@/components/FolderCard";
 import { LoadingGrid, ErrorState, EmptyState } from "@/components/StateViews";
 import { useAsync } from "@/hooks/useAsync";
-import { listSubjects } from "@/lib/papers";
+import { listSubjects, subjectDisplayName } from "@/lib/papers";
 
 const ACCENT_CYCLE = ["primary", "accent", "success"] as const;
 
@@ -61,7 +61,7 @@ export default function SubjectsPage({ description }: SubjectsPageProps = {}) {
             <FolderCard
               key={subject}
               to={`/${encodeURIComponent(subject)}`}
-              title={subject}
+              title={subjectDisplayName(subject)}
               accent={ACCENT_CYCLE[i % ACCENT_CYCLE.length]}
             />
           ))}

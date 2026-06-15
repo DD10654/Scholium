@@ -1,9 +1,52 @@
 import { supabase, PAPERS_BUCKET } from "@/integrations/supabase/client";
 
+// When VITE_R2_PUBLIC_URL is set, papers are served from Cloudflare R2 and the
+// folder tree is listed from the `paper_files` table (R2 can't be listed from
+// the browser). Unset → fall back to the original public Supabase bucket.
+const R2_PUBLIC_URL =
+  (import.meta.env.VITE_R2_PUBLIC_URL as string | undefined)?.replace(/\/+$/, "") || "";
+const USE_R2 = R2_PUBLIC_URL.length > 0;
+
+function r2Url(subject: string, component: string, fileName: string): string {
+  return `${R2_PUBLIC_URL}/${encodeURIComponent(subject)}/${encodeURIComponent(
+    component,
+  )}/${encodeURIComponent(fileName)}`;
+}
+
+// Friendly display names for subject codes. The code (e.g. "0607") stays the
+// canonical identifier used in URLs, the `paper_files` index, and R2 paths —
+// this map only changes what the user sees. Add new subjects here.
+const SUBJECT_DISPLAY_NAMES: Record<string, string> = {
+  "0606": "Additional Mathematics",
+  "0607": "International Mathematics",
+};
+
+export function subjectDisplayName(code: string): string {
+  return SUBJECT_DISPLAY_NAMES[code] ?? code;
+}
+
+// Distinct subject/component values from the index table (PostgREST has no
+// DISTINCT, so we dedupe client-side — the set is small).
+async function distinctColumn(
+  column: "subject" | "component",
+  subject?: string,
+): Promise<string[]> {
+  let query = supabase.from("paper_files").select(column);
+  if (subject) query = query.eq("subject", subject);
+  const { data, error } = await query;
+  if (error) throw error;
+  const seen = new Set<string>();
+  for (const row of (data ?? []) as Record<string, string>[]) {
+    if (row[column]) seen.add(row[column]);
+  }
+  return Array.from(seen).sort((a, b) => a.localeCompare(b));
+}
+
 export type PaperType = "QP" | "MS";
 
 export interface Question {
   id: string;
+  subject: string;
   paper: string;
   question_number: number;
   chapter_name: string;
@@ -74,35 +117,30 @@ async function listFolders(prefix: string): Promise<string[]> {
 }
 
 export async function listSubjects(): Promise<string[]> {
+  if (USE_R2) return distinctColumn("subject");
   return listFolders("");
 }
 
 export async function listComponents(subject: string): Promise<string[]> {
+  if (USE_R2) return distinctColumn("component", subject);
   return listFolders(subject);
 }
 
-export async function listChapters(subject: string, component: string): Promise<ChapterEntry[]> {
-  const prefix = `${subject}/${component}`;
-  const { data, error } = await supabase.storage.from(PAPERS_BUCKET).list(prefix, {
-    limit: 1000,
-    sortBy: { column: "name", order: "asc" },
-  });
-  if (error) throw error;
-
+// Group a flat list of file names into chapter entries. `urlFor` resolves each
+// file name to a downloadable URL (R2 public URL or Supabase public URL).
+function buildChapters(
+  fileNames: string[],
+  urlFor: (fileName: string) => string,
+): ChapterEntry[] {
   const groups = new Map<number, ChapterEntry>();
 
-  for (const entry of data ?? []) {
-    if (entry.id === null) continue; // skip folders
-    const parsed = parseFileName(entry.name);
+  for (const name of fileNames) {
+    const parsed = parseFileName(name);
     if (!parsed) continue;
-
-    const { data: pub } = supabase.storage
-      .from(PAPERS_BUCKET)
-      .getPublicUrl(`${prefix}/${entry.name}`);
 
     const file: PaperFile = {
       type: parsed.type,
-      url: pub.publicUrl,
+      url: urlFor(name),
       fileName: parsed.fileName,
     };
 
@@ -125,11 +163,45 @@ export async function listChapters(subject: string, component: string): Promise<
   return Array.from(groups.values()).sort((a, b) => a.number - b.number);
 }
 
-export async function getQuestionsByChapter(chapter: number): Promise<Question[]> {
+export async function listChapters(subject: string, component: string): Promise<ChapterEntry[]> {
+  if (USE_R2) {
+    const { data, error } = await supabase
+      .from("paper_files")
+      .select("file_name")
+      .eq("subject", subject)
+      .eq("component", component);
+    if (error) throw error;
+    const names = ((data ?? []) as { file_name: string }[]).map((r) => r.file_name);
+    return buildChapters(names, (name) => r2Url(subject, component, name));
+  }
+
+  const prefix = `${subject}/${component}`;
+  const { data, error } = await supabase.storage.from(PAPERS_BUCKET).list(prefix, {
+    limit: 1000,
+    sortBy: { column: "name", order: "asc" },
+  });
+  if (error) throw error;
+  const names = (data ?? []).filter((entry) => entry.id !== null).map((entry) => entry.name);
+  return buildChapters(
+    names,
+    (name) => supabase.storage.from(PAPERS_BUCKET).getPublicUrl(`${prefix}/${name}`).data.publicUrl,
+  );
+}
+
+// Questions for one chapter of one subject + paper. The paper is matched on the
+// `P<n>-` id prefix (e.g. paperNum 2 → ids like "P2-Q001"), so generation stays
+// restricted to the selected component.
+export async function getQuestionsByChapter(
+  subject: string,
+  paperNum: number,
+  chapter: number,
+): Promise<Question[]> {
   const { data, error } = await supabase
     .from("questions_metadata")
     .select("*")
+    .eq("subject", subject)
     .eq("chapter_num", chapter)
+    .like("id", `P${paperNum}-%`)
     .order("id");
 
   if (error) throw error;
@@ -154,6 +226,7 @@ interface GeneratePaperOptions {
 }
 
 export async function generatePaper(
+  subject: string,
   questionIds: string[],
   options: GeneratePaperOptions = {}
 ): Promise<Blob> {
@@ -161,6 +234,7 @@ export async function generatePaper(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
+      subject,
       selections: Object.fromEntries(questionIds.map((id) => [id, true])),
       includeMarkScheme: options.includeMarkScheme ?? true,
       randomize: options.randomize ?? false,

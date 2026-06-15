@@ -4,7 +4,7 @@ import FolderCard from "@/components/FolderCard";
 import Crumbs from "@/components/Crumbs";
 import { LoadingGrid, ErrorState, EmptyState } from "@/components/StateViews";
 import { useAsync } from "@/hooks/useAsync";
-import { listComponents } from "@/lib/papers";
+import { listComponents, subjectDisplayName } from "@/lib/papers";
 
 const ACCENT_CYCLE = ["primary", "accent", "success"] as const;
 
@@ -23,13 +23,13 @@ export default function ComponentsPage() {
         <Crumbs
           items={[
             { label: "Subjects", to: "/" },
-            { label: subjectName },
+            { label: subjectDisplayName(subjectName) },
           ]}
         />
       </div>
 
       <h2 className="font-display font-bold text-2xl text-foreground mb-6">
-        {subjectName}
+        {subjectDisplayName(subjectName)}
       </h2>
 
       {loading && <LoadingGrid count={4} />}

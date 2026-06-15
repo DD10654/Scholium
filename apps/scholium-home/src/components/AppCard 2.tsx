@@ -1,9 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowUpRight, LockOpen, PlayCircle, Sparkles } from "lucide-react";
-
-// Fallback for tools with a no-signup trial at `<app-url>/demo`, used only when
-// the DB `has_demo` flag is absent (e.g. before the tags migration is applied).
-const DEMO_SLUGS = new Set(["language-hub", "recall-app", "poetry-notes"]);
+import { ArrowUpRight } from "lucide-react";
 
 const APP_META: Record<
   string,
@@ -107,8 +103,6 @@ interface AppCardProps {
   icon?: string | null;
   subjects?: string[] | null;
   description?: string | null;
-  has_demo?: boolean | null;
-  no_login?: boolean | null;
   highlighted?: boolean;
   imageSide?: "left" | "right";
 }
@@ -120,14 +114,10 @@ export default function AppCard({
   icon,
   subjects,
   description,
-  has_demo,
-  no_login,
   highlighted,
   imageSide = "right",
 }: AppCardProps) {
   const slug = useMemo(() => resolveAppSlug(title, url), [title, url]);
-  const showDemo = has_demo ?? DEMO_SLUGS.has(slug);
-  const tryUrl = showDemo ? `${url.replace(/\/+$/, "")}/demo` : null;
   const meta = APP_META[slug];
   const accentVar = meta?.accentVar ?? "--primary";
   const accent = `hsl(var(${accentVar}))`;
@@ -152,47 +142,12 @@ export default function AppCard({
     imageSide === "left" ? "md:flex-row-reverse" : "md:flex-row";
 
   return (
-    <div className="relative">
-    {(tryUrl || no_login) && (
-      <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
-        {tryUrl && (
-          <a
-            href={tryUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="sch-focus inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] shadow-soft transition-transform hover:-translate-y-0.5"
-            style={{
-              background: "hsl(var(--card))",
-              color: accent,
-              border: `1px solid ${accent}`,
-            }}
-            aria-label={`Try ${title} free, no account needed`}
-          >
-            <PlayCircle size={14} strokeWidth={2.25} aria-hidden />
-            Try it free
-          </a>
-        )}
-        {no_login && (
-          <span
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-[0.08em] shadow-soft"
-            style={{
-              background: `hsl(var(${accentVar}) / 0.12)`,
-              color: accent,
-              border: `1px solid hsl(var(${accentVar}) / 0.3)`,
-            }}
-          >
-            <LockOpen size={14} strokeWidth={2.25} aria-hidden />
-            No login required
-          </span>
-        )}
-      </div>
-    )}
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
       data-app-id={id}
-      className={`sch-focus group relative flex flex-col ${rowDirection} bg-paper rounded-[var(--radius-lg)] border border-[color:var(--color-border)] overflow-hidden transition-all duration-500`}
+      className={`group relative flex flex-col ${rowDirection} bg-paper rounded-[var(--radius-lg)] border border-[color:var(--color-border)] overflow-hidden transition-all duration-500`}
       style={highlightStyle}
       onMouseEnter={(e) => {
         if (highlighted) return;
@@ -217,7 +172,7 @@ export default function AppCard({
             color: accent,
           }}
         >
-          {icon ? icon : <Sparkles size={22} strokeWidth={2} aria-hidden />}
+          {icon ?? "✦"}
         </div>
 
         <h3
@@ -289,6 +244,5 @@ export default function AppCard({
         </div>
       )}
     </a>
-    </div>
   );
 }

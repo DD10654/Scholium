@@ -10,6 +10,10 @@ export interface AppLink {
   icon?: string | null;
   subjects?: string[] | null;
   description?: string | null;
+  /** Tool offers a no-signup interactive trial at `<url>/demo`. */
+  has_demo?: boolean | null;
+  /** Tool itself can be used without an account. */
+  no_login?: boolean | null;
 }
 
 export interface ScholiumNavbarProps {

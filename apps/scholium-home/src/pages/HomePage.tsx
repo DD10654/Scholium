@@ -130,8 +130,9 @@ export default function HomePage({ apps, loadingApps }: HomePageProps) {
             ) : undefined
           }
         />
-        <TrustStrip />
-        <FeaturesSection persona={persona} />
+        {/* Subject-intent lead: the first question a revising visitor asks is
+            "do you cover my subject?" — so the picker + suite come first, and
+            the manifesto (trust strip + principles) is demoted below them. */}
         <SubjectPicker apps={apps} onPick={handleSubjectPick} />
         <AppGrid
           apps={filteredApps}
@@ -139,6 +140,8 @@ export default function HomePage({ apps, loadingApps }: HomePageProps) {
           highlightedAppId={highlightedAppId}
           subject={subjectFilter?.subject ?? null}
         />
+        <TrustStrip />
+        <FeaturesSection persona={persona} />
         <ClosingCTA />
       </main>
       <Footer apps={apps} />

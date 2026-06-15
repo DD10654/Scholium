@@ -8,6 +8,8 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import HomePage from "@/pages/HomePage";
 import ResetPassword from "@/pages/ResetPassword";
 import Auth from "@/pages/Auth";
+import MemorySciencePage from "@/pages/MemorySciencePage";
+import SubjectPage from "@/pages/SubjectPage";
 import HeroScenesPage from "@/dev/hero-scenes/HeroScenesPage";
 
 // Source the suite — titles, icons, URLs, subject tags and descriptions — from
@@ -17,9 +19,9 @@ import HeroScenesPage from "@/dev/hero-scenes/HeroScenesPage";
 async function loadScholiumApps(): Promise<AppLink[]> {
   const first = await supabase
     .from("scholium_apps")
-    .select("id, title, url, icon, subjects, description")
+    .select("id, title, url, icon, subjects, description, has_demo, no_login")
     .order("sort_order");
-  if (first.error && /(subjects|description)/i.test(first.error.message)) {
+  if (first.error && /(subjects|description|has_demo|no_login)/i.test(first.error.message)) {
     const fallback = await supabase
       .from("scholium_apps")
       .select("id, title, url, icon")
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="/signin" element={<Auth defaultMode="signin" />} />
           <Route path="/signup" element={<Auth defaultMode="signup" />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
+          <Route path="/memory-science" element={<MemorySciencePage apps={apps} />} />
+          <Route path="/subjects/:slug" element={<SubjectPage apps={apps} />} />
           {import.meta.env.DEV && (
             <Route path="/__hero-scenes" element={<HeroScenesPage />} />
           )}

@@ -71,7 +71,7 @@ export default function Study() {
   const info = PASS_CONFIG[pass];
   const passDescriptions: Record<number, string> = {
     1: "Match each term to its correct definition. Click a term, then its definition.",
-    2: "Read each definition and choose the matching term from four options.",
+    2: "Select the correct definition for each term from four options.",
     3: "Read the definition and type the missing term. A letter-count hint is shown.",
     4: "See the term and write the full definition from memory. Then self-assess.",
   };

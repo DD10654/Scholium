@@ -188,7 +188,7 @@ const Study = () => {
               <Trophy className="h-20 w-20 mx-auto text-accent mb-6" />
               <h2 className="text-3xl font-bold font-display mb-2">Set Complete!</h2>
               <p className="text-xl text-muted-foreground mb-6">{setName}</p>
-              <div className="text-6xl font-bold gradient-hero bg-clip-text text-transparent mb-2">
+              <div className="text-6xl font-bold text-primary mb-2">
                 100%
               </div>
               <p className="text-muted-foreground mb-8">All items already mastered</p>

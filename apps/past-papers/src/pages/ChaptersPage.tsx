@@ -4,7 +4,7 @@ import Layout from "@/components/Layout";
 import Crumbs from "@/components/Crumbs";
 import { ErrorState, EmptyState } from "@/components/StateViews";
 import { useAsync } from "@/hooks/useAsync";
-import { listChapters, type ChapterEntry, type PaperFile } from "@/lib/papers";
+import { listChapters, subjectDisplayName, type ChapterEntry, type PaperFile } from "@/lib/papers";
 
 function PaperLink({
   file,
@@ -95,7 +95,7 @@ export default function ChaptersPage() {
         <Crumbs
           items={[
             { label: "Subjects", to: "/" },
-            { label: subjectName, to: `/${encodeURIComponent(subjectName)}` },
+            { label: subjectDisplayName(subjectName), to: `/${encodeURIComponent(subjectName)}` },
             { label: componentName },
           ]}
         />
@@ -105,7 +105,7 @@ export default function ChaptersPage() {
         <h2 className="font-display font-bold text-2xl text-foreground">
           {componentName}
         </h2>
-        <p className="text-sm text-muted-foreground mt-1">{subjectName}</p>
+        <p className="text-sm text-muted-foreground mt-1">{subjectDisplayName(subjectName)}</p>
       </div>
 
       {loading && (
