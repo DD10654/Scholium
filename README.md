@@ -99,10 +99,9 @@ Follow these steps to run the project locally on your machine.
 3. Install dependencies: "pnpm install"
 4. Start the local development server: "pnpm dev"
 
-```markdown
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/AaravAgarwal1511/Scholium/issues).
 
 ## 📄 License
-This project is licensed under the MIT License.```
+This project is licensed under the MIT License.
 
