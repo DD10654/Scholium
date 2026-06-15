@@ -9,3 +9,5 @@ export { ScholiumNavbar } from './ScholiumNavbar';
 export type { ScholiumNavbarProps, AppLink } from './ScholiumNavbar';
 
 export { ScholiumLogo } from './ScholiumLogo';
+
+export { useTourCompleted, tourStyles, useTourStyles } from './useTourCompleted';
