@@ -67,7 +67,13 @@ export default function HomePage({ apps, loadingApps }: HomePageProps) {
 
   const highlight = useCallback((id: string) => {
     setHighlightedAppId(id);
-    requestAnimationFrame(() => scrollTo("tools"));
+    // Scroll to the matching card. Scrolling to the section instead parks every
+    // subject on the suite header, where the first card reads as the match.
+    requestAnimationFrame(() => {
+      const card = document.getElementById(`app-${id}`);
+      if (card) card.scrollIntoView({ behavior: "smooth" });
+      else scrollTo("tools");
+    });
     if (clearTimerRef.current !== null) window.clearTimeout(clearTimerRef.current);
     clearTimerRef.current = window.setTimeout(() => {
       setHighlightedAppId(null);

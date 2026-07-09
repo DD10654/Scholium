@@ -44,7 +44,7 @@ function NavbarWired({ apps }: { apps: AppLink[] }) {
         navigate("/");
       }}
       onPickSubject={(_subject, appId) =>
-        navigate(`/?highlight=${encodeURIComponent(appId)}#tools`)
+        navigate(`/?highlight=${encodeURIComponent(appId)}`)
       }
     />
   );

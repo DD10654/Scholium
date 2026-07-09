@@ -152,7 +152,7 @@ export default function AppCard({
     imageSide === "left" ? "md:flex-row-reverse" : "md:flex-row";
 
   return (
-    <div className="relative">
+    <div id={`app-${id}`} className="relative scroll-mt-24">
     {(tryUrl || no_login) && (
       <div className="absolute top-4 right-4 z-20 flex flex-col items-end gap-2">
         {tryUrl && (

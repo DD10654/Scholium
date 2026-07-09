@@ -22,7 +22,9 @@ export interface ScholiumNavbarProps {
   /** Base URL for the logo link and /signin /signup hrefs. Defaults to "" (relative). */
   homeUrl?: string;
   /** When provided, picking a search autocomplete suggestion calls this handler.
-   *  When omitted, the navbar navigates to `${homeUrl}/?highlight=<appId>#tools` instead. */
+   *  When omitted, the navbar navigates to `${homeUrl}/?highlight=<appId>` instead.
+   *  No `#tools` fragment: the home page scrolls to the matching card itself, and a
+   *  fragment would race that smooth scroll when the document finishes loading. */
   onPickSubject?: (subject: string, appId: string) => void;
   /** When set, Login/Join now are replaced with an account menu. */
   user?: { email: string } | null;
@@ -128,7 +130,7 @@ export function ScholiumNavbar({
       onPickSubject(entry.subject, entry.appId);
     } else {
       const base = homeUrl || '';
-      window.location.href = `${base}/?highlight=${encodeURIComponent(entry.appId)}#tools`;
+      window.location.href = `${base}/?highlight=${encodeURIComponent(entry.appId)}`;
     }
   }
 
