@@ -5,3 +5,9 @@ dist
 .env.local
 *.log
 .DS_Store
+
+# Google Cloud service-account key (never commit)
+gcp-tts-key.json
+
+# Internal legal/content reports (not for public repo)
+reports/

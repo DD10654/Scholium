@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { ScholiumNavbar } from "@repo/ui";
+import { ScholiumNavbar, TermsOfService, PrivacyPolicy } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
+import "@repo/ui/legal.css";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import HomePage from "@/pages/HomePage";
@@ -70,6 +71,8 @@ export default function App() {
           <Route path="/auth/reset-password" element={<ResetPassword />} />
           <Route path="/memory-science" element={<MemorySciencePage apps={apps} />} />
           <Route path="/subjects/:slug" element={<SubjectPage apps={apps} />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
           {import.meta.env.DEV && (
             <Route path="/__hero-scenes" element={<HeroScenesPage />} />
           )}

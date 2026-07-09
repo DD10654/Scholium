@@ -1,6 +1,6 @@
 /* Scholium shared design tokens — uniform palette across the suite.
  *
- * Font: IBM Plex Sans (Google Fonts).
+ * Font: IBM Plex Sans (self-hosted via @fontsource-variable/ibm-plex-sans, OFL-1.1).
  * Palette: electric indigo primary + warm amber accent.
  * Theme: light by default, dark via .dark/.dark-mode class. useDarkMode
  *        hook reads prefers-color-scheme on first load, persists toggle.
@@ -9,7 +9,10 @@
  * and typography are the same everywhere.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap');
+/* Self-hosted IBM Plex Sans (variable weight axis, normal + italic). Bundled by
+ * Vite — no external requests, so EU users' IPs never reach Google (GDPR). */
+@import '@fontsource-variable/ibm-plex-sans/wght.css';
+@import '@fontsource-variable/ibm-plex-sans/wght-italic.css';
 
 :root {
   /* ── Light palette (base) ───────────────────────────────────────────── */
@@ -56,11 +59,11 @@
   --color-accent-destructive: hsl(var(--destructive));
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  --font-display: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
-  --font-body: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
-  --font-sans: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
-  --font-serif: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
-  --font-mono: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+  --font-display: 'IBM Plex Sans Variable', 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+  --font-body: 'IBM Plex Sans Variable', 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+  --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+  --font-serif: 'IBM Plex Sans Variable', 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+  --font-mono: 'IBM Plex Sans Variable', 'IBM Plex Sans', Arial, Helvetica, sans-serif;
 
   /* ── Spacing ────────────────────────────────────────────────────────── */
   --space-xs: 0.25rem;

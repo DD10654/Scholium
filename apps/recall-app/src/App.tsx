@@ -3,9 +3,10 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from
 import { Loader2 } from "lucide-react";
 import { AppProvider, useApp } from "@/contexts/AppContext";
 import { Toaster } from "@/components/ui/sonner";
-import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
+import { ScholiumNavbar, ScholiumFooter, TermsOfService, PrivacyPolicy, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
+import "@repo/ui/legal.css";
 import { supabase } from "@/integrations/supabase/client";
 import Login from "@/pages/Login";
 import Home from "@/pages/Home";
@@ -132,6 +133,8 @@ function FadeRoutes({ description }: { description?: string | null }) {
           }
         />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
+        <Route path="/terms" element={<TermsOfService homeUrl={SCHOLIUM_HOME_URL} />} />
+        <Route path="/privacy" element={<PrivacyPolicy homeUrl={SCHOLIUM_HOME_URL} />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </div>
@@ -157,6 +160,7 @@ export default function App() {
             <AppProvider>
               <NavbarWired apps={apps} />
               <FadeRoutes description={ownDescription} />
+              <ScholiumFooter homeUrl={SCHOLIUM_HOME_URL} />
               <Toaster />
             </AppProvider>
           }

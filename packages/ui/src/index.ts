@@ -10,6 +10,18 @@ export type { ScholiumNavbarProps, AppLink } from './ScholiumNavbar';
 
 export { ScholiumLogo } from './ScholiumLogo';
 
+export { ScholiumFooter } from './ScholiumFooter';
+export type { ScholiumFooterProps } from './ScholiumFooter';
+
+export { LegalPage } from './LegalPage';
+export type { LegalPageProps } from './LegalPage';
+export { TermsOfService } from './TermsOfService';
+export type { LegalDocProps } from './TermsOfService';
+export { PrivacyPolicy } from './PrivacyPolicy';
+
 export { useTourCompleted, tourStyles, useTourStyles } from './useTourCompleted';
+
+export { SingleSessionGuard } from './SingleSessionGuard';
+export type { SingleSessionGuardProps } from './SingleSessionGuard';
 
 export { SCHOLIUM_HOME_URL } from './constants';

@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { SingleSessionGuard } from "@repo/ui";
 import { supabase } from "@/integrations/supabase/client";
 import type { Passes, User } from "@/types";
 
@@ -103,7 +104,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [user, supabaseUser, passes, loadingAuth, loadingProgress, setPassForChapter, resetProgress, logout, deleteAccount],
   );
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      <SingleSessionGuard supabase={supabase} userId={supabaseUser?.id ?? null} appKey="recall-app" />
+      {children}
+    </AppContext.Provider>
+  );
 }
 
 export function useApp() {

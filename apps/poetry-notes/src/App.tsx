@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProjectProvider, useProject } from './contexts/ProjectContext';
-import { ScholiumNavbar, SCHOLIUM_HOME_URL } from '@repo/ui';
+import { ScholiumNavbar, ScholiumFooter, TermsOfService, PrivacyPolicy, SCHOLIUM_HOME_URL } from '@repo/ui';
 import type { AppLink } from '@repo/ui';
 import '@repo/ui/scholium-navbar.css';
+import '@repo/ui/legal.css';
 import { supabase } from './integrations/supabase/client';
 import { Login } from './pages/Login';
 import { Settings } from './pages/Settings';
@@ -95,13 +96,18 @@ function AppContent() {
           />
         )}
       </div>
+      <ScholiumFooter homeUrl={SCHOLIUM_HOME_URL} />
     </div>
   );
 }
 
 export default function App() {
-  if (typeof window !== 'undefined' && window.location.pathname === '/demo') {
-    return <Demo />;
+  if (typeof window !== 'undefined') {
+    const path = window.location.pathname;
+    if (path === '/demo') return <Demo />;
+    // Legal pages are public and router-free — served directly like /demo.
+    if (path === '/terms') return <TermsOfService homeUrl={SCHOLIUM_HOME_URL} />;
+    if (path === '/privacy') return <PrivacyPolicy homeUrl={SCHOLIUM_HOME_URL} />;
   }
   return (
     <AuthProvider>

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
+import { ScholiumNavbar, ScholiumFooter, TermsOfService, PrivacyPolicy, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
+import "@repo/ui/legal.css";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import SubjectsPage from "@/pages/SubjectsPage";
@@ -83,10 +84,13 @@ function MainRoutes({ apps, ownDescription }: { apps: AppLink[]; ownDescription:
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/generate" element={<GeneratePaperPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/terms" element={<TermsOfService homeUrl={SCHOLIUM_HOME_URL} />} />
+        <Route path="/privacy" element={<PrivacyPolicy homeUrl={SCHOLIUM_HOME_URL} />} />
         <Route path="/:subject" element={<ComponentsPage />} />
         <Route path="/:subject/:component" element={<ChaptersPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      <ScholiumFooter homeUrl={SCHOLIUM_HOME_URL} />
     </>
   );
 }

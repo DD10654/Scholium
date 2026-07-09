@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { User } from "@supabase/supabase-js";
+import { SingleSessionGuard } from "@repo/ui";
 import { supabase } from "../integrations/supabase/client";
 
 interface AuthContextType {
@@ -41,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ user, loadingAuth, isPasswordRecovery, signOut }}>
+      <SingleSessionGuard supabase={supabase} userId={user?.id ?? null} appKey="scholium-home" />
       {children}
     </AuthContext.Provider>
   );

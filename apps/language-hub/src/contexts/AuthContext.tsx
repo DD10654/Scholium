@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { User, Session } from "@supabase/supabase-js";
+import { SingleSessionGuard } from "@repo/ui";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -87,6 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     return (
         <AuthContext.Provider value={{ user, session, loading, signOut }}>
+            <SingleSessionGuard supabase={supabase} userId={user?.id ?? null} appKey="language-hub" />
             {children}
         </AuthContext.Provider>
     );

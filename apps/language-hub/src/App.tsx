@@ -5,9 +5,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { ScholiumNavbar, SCHOLIUM_HOME_URL } from "@repo/ui";
+import { ScholiumNavbar, ScholiumFooter, TermsOfService, PrivacyPolicy, SCHOLIUM_HOME_URL } from "@repo/ui";
 import type { AppLink } from "@repo/ui";
 import "@repo/ui/scholium-navbar.css";
+import "@repo/ui/legal.css";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Demo from "./pages/Demo";
@@ -74,6 +75,8 @@ function FadeRoutes({ description }: { description?: string | null }) {
         <Route path="/signup" element={<Auth defaultMode="signup" />} />
         <Route path="/auth/reset-password" element={<ResetPassword />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/terms" element={<TermsOfService homeUrl={SCHOLIUM_HOME_URL} />} />
+        <Route path="/privacy" element={<PrivacyPolicy homeUrl={SCHOLIUM_HOME_URL} />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
@@ -103,6 +106,7 @@ const App = () => {
                 <AuthProvider>
                   <NavbarWired apps={apps} />
                   <FadeRoutes description={ownDescription} />
+                  <ScholiumFooter homeUrl={SCHOLIUM_HOME_URL} />
                 </AuthProvider>
               }
             />
