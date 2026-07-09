@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Pass2 } from '@/components/study/Pass2';
 
 const ECON_CARDS = [

@@ -11,6 +11,12 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    // Without this the storybook test env resolves react-dom@18 (pulled in for the
+    // React-18 apps) against this package's react@19, and every story render fails
+    // with "Objects are not valid as a React child". All five apps dedupe likewise.
+    dedupe: ['react', 'react-dom'],
+  },
   test: {
     projects: [{
       extends: true,

@@ -17,12 +17,20 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
  * free of a direct @supabase/supabase-js dependency.
  */
 
+// These stay `any`. A structural stand-in cannot accept a real SupabaseClient:
+// `from()` returns a deeply-generic PostgrestQueryBuilder that trips TS2589
+// ("type instantiation is excessively deep") when structurally compared, and
+// `channel().on()` is overloaded (presence | broadcast | postgres_changes) so
+// assignability resolves against the first overload and always fails. Typing
+// them properly means importing @supabase/supabase-js — see the note above.
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface SupabaseLike {
   from: (table: string) => any;
   channel: (name: string) => any;
   removeChannel: (channel: any) => any;
   auth: { signOut: (options?: { scope?: 'global' | 'local' | 'others' }) => Promise<unknown> };
 }
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
 export interface SingleSessionGuardProps {
   /** The app's Supabase client. */
@@ -63,6 +71,7 @@ export function SingleSessionGuard({ supabase, userId, appKey }: SingleSessionGu
 
     const deviceId = getDeviceId();
     let cancelled = false;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- see SupabaseLike
     let channel: any;
 
     const kick = () => {

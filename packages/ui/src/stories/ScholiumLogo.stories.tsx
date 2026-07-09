@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ScholiumLogo } from '../ScholiumLogo';
 
 const meta: Meta<typeof ScholiumLogo> = {

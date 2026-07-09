@@ -6,6 +6,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
+    "check-types": "turbo run check-types",
+    "boundaries": "turbo boundaries",
     "preview": "turbo run preview",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e"

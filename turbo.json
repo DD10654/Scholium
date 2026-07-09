@@ -1,11 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"]
     },
     "lint": {},
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
     "preview": {
       "dependsOn": ["build"],
       "cache": false,
@@ -19,7 +24,6 @@
       "outputs": ["coverage/**"]
     },
     "test:e2e": {
-      "outputs": ["playwright-report/**"],
       "cache": false
     },
     "storybook": {

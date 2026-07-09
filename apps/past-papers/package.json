@@ -9,6 +9,7 @@
     "dev:server": "node --env-file=.env server.js",
     "build": "vite build",
     "lint": "eslint .",
+    "check-types": "tsc -p tsconfig.app.json --noEmit",
     "preview": "vite preview",
     "upload:questions": "node --env-file=.env scripts/upload-questions.js",
     "index:papers": "node --env-file=.env scripts/build-paper-index.js"

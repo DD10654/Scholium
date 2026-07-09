@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import { CompletionScreen } from '@/components/study/CompletionScreen';
 
 const meta: Meta<typeof CompletionScreen> = {

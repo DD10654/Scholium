@@ -1,4 +1,5 @@
 {
+  "ignoreCommand": "npx turbo-ignore",
   "headers": [
     {
       "source": "/(.*)",

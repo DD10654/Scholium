@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { userEvent, within } from '@storybook/test';
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import { userEvent, within } from 'storybook/test';
 import { AuthCard } from '../AuthCard';
 
 const meta: Meta<typeof AuthCard> = {
@@ -25,14 +25,14 @@ export const SignInWithHint: Story = {
 export const SignUp: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByText('Create an account'));
+    await userEvent.click(canvas.getByText('Create Account'));
   },
 };
 
 export const ForgotPassword: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await userEvent.click(canvas.getByText('Forgot password?'));
+    await userEvent.click(canvas.getByText('Forgot Password?'));
   },
 };
 

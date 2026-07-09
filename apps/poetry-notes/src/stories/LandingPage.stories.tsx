@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { userEvent, within } from '@storybook/test';
+import { userEvent, within } from 'storybook/test';
 import { LandingPage } from '../components/LandingPage';
 import { ProjectProvider } from '../contexts/ProjectContext';
 
