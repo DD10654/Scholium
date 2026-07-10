@@ -20,9 +20,9 @@ export default function RecallScene() {
       </div>
 
       <div className="hs-rcard">
-        <div className="hs-term">Mitochondria</div>
+        <div className="hs-term">Acceleration</div>
         <div className="hs-def">
-          The organelle that produces most of a cell's ATP — its energy currency.
+          The rate at which an object's velocity changes — measured in m/s².
         </div>
         <div className="hs-confidence">
           {CONFIDENCE.map((c) => (

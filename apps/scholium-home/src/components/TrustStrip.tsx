@@ -9,7 +9,7 @@ interface Stat {
 }
 
 const STATS: Stat[] = [
-  { Icon: LayoutGrid, label: "4 focused tools", sub: "Vocabulary, recall, poetry, papers" },
+  { Icon: LayoutGrid, label: "5 focused tools", sub: "Vocabulary, recall, poetry, papers, mocks" },
   { Icon: KeyRound, label: "One account", sub: "Sign in once, use them all" },
   { Icon: Gift, label: "Free forever", sub: "No tiers, no subscriptions" },
   { Icon: ShieldOff, label: "No tracking", sub: "No feeds, no ads, no streaks" },

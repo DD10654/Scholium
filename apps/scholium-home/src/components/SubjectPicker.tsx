@@ -21,13 +21,20 @@ import {
   Lightbulb,
   BookMarked,
   Microscope,
+  Receipt,
+  Network,
 } from "lucide-react";
 
+// Keys are matched exactly against the lowercased `subjects` strings on the DB
+// `scholium_apps` rows, so they track those names verbatim — abbreviations and
+// all: cs = Computer Science, bs = Business Studies, ict = Information and
+// Communication Technology.
 const SUBJECT_ICONS: Record<string, LucideIcon> = {
   mathematics: Calculator,
   maths: Calculator,
   math: Calculator,
-  "international mathematics": Calculator,
+  "int. mathematics": Calculator,
+  "add. mathematics": Calculator,
   english: BookOpen,
   literature: BookOpen,
   poetry: Feather,
@@ -40,12 +47,16 @@ const SUBJECT_ICONS: Record<string, LucideIcon> = {
   french: Languages,
   spanish: Languages,
   languages: Languages,
-  "second language french": Languages,
-  "second language spanish": Languages,
+  "sl french": Languages,
+  "sl spanish": Languages,
   economics: TrendingUp,
+  accounting: Receipt,
   business: Briefcase,
+  bs: Briefcase,
   computing: Monitor,
   "computer science": Monitor,
+  cs: Monitor,
+  ict: Network,
   music: Music,
   art: Palette,
   drama: Drama,
