@@ -7,6 +7,8 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Volume2, Check, X, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { useSounds } from "@/hooks/use-sounds";
+import { useSpeak } from "@/hooks/use-speak";
+import { normalizeAnswer } from "@/lib/answer";
 import { AccentButtons } from "@/components/AccentButtons";
 
 export interface QuizItem {
@@ -35,9 +37,6 @@ interface QuizSessionProps {
   completionActions: React.ReactNode;
 }
 
-const normalizeAnswer = (text: string) =>
-  text.toLowerCase().trim().replace(/\s+/g, " ");
-
 export const QuizSession = ({
   questions,
   title,
@@ -48,6 +47,7 @@ export const QuizSession = ({
   completionActions,
 }: QuizSessionProps) => {
   const { playCorrect, playIncorrect } = useSounds();
+  const speak = useSpeak();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState("");
   const [showResult, setShowResult] = useState(false);
@@ -61,29 +61,6 @@ export const QuizSession = ({
   const retypeInputRef = useRef<HTMLInputElement>(null);
 
   const currentQuestion = questions[currentIndex];
-
-  const speak = useCallback(async (text: string, lang: string) => {
-    const cleanText = text.replace(/[/]/g, " ").replace(/[-]/g, " ").replace(/\(.*?\)/g, " ");
-    try {
-      const response = await fetch("/api/speak", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: cleanText, lang }),
-      });
-      if (!response.ok) throw new Error("Failed to fetch audio");
-      const data = await response.json();
-      const audio = new Audio(`data:audio/mp3;base64,${data.audio}`);
-      await audio.play().catch(() => {
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = lang === "spanish" ? "es-ES" : "fr-FR";
-        window.speechSynthesis.speak(utterance);
-      });
-    } catch {
-      const utterance = new SpeechSynthesisUtterance(cleanText);
-      utterance.lang = lang === "spanish" ? "es-ES" : "fr-FR";
-      window.speechSynthesis.speak(utterance);
-    }
-  }, []);
 
   const nextQuestion = useCallback(() => {
     if (currentIndex < questions.length - 1) {

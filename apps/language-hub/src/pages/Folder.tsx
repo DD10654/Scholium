@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -25,8 +25,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { SetCard } from "@/components/SetCard";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, BookOpen, BarChart3, FolderOpen, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowLeft, FolderOpen, Pencil, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 
 interface VocabularySet {
@@ -376,66 +377,21 @@ const FolderPage = () => {
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
             {sets.map((set) => (
-              <Card key={set.id} className="group shadow-card hover:shadow-hover transition-all duration-300 hover:-translate-y-1">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg font-display group-hover:text-primary transition-colors">
-                        {set.name}
-                      </CardTitle>
-                      {set.description && (
-                        <CardDescription className="mt-1 line-clamp-2">{set.description}</CardDescription>
-                      )}
-                    </div>
-                    <div className="flex gap-1">
-                      <Link to={`/edit/${set.id}`}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary hover:bg-primary/10"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeSet(set.id)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        title="Remove from folder"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="h-4 w-4" />
-                      {set.item_count} {set.item_count === 1 ? "term" : "terms"}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <BarChart3 className="h-4 w-4" />
-                      {set.progress}% mastered
-                    </span>
-                  </div>
-                  <div className="mb-3">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                      {set.language === "spanish" ? "🇪🇸 Spanish" : "🇫🇷 French"}
-                    </span>
-                  </div>
-                  <div className="w-full h-2 bg-secondary rounded-full overflow-hidden mb-4">
-                    <div
-                      className="h-full gradient-success transition-all duration-500"
-                      style={{ width: `${set.progress}%` }}
-                    />
-                  </div>
-                  <Link to={`/study/${set.id}`}>
-                    <Button variant="default" className="w-full">Study Now</Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <SetCard
+                key={set.id}
+                set={set}
+                action={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeSet(set.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    title="Remove from folder"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                }
+              />
             ))}
           </div>
         )}

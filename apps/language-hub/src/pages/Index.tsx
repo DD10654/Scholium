@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, BookOpen, Trash2, BarChart3, Dumbbell, Pencil, FolderOpen, FolderPlus } from "lucide-react";
+import { Plus, BookOpen, Trash2, Dumbbell, FolderOpen, FolderPlus } from "lucide-react";
+import { SetCard } from "@/components/SetCard";
 import { useTourStyles } from "@repo/ui";
 import { useTour } from "@/hooks/useTour";
 import { Joyride, type EventData, STATUS } from "react-joyride";
@@ -412,95 +413,41 @@ const Index = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {uncategorizedSets.map((set, index) => (
-                <Card
+                <SetCard
                   key={set.id}
-                  className="group shadow-card hover:shadow-hover transition-all duration-300 hover:-translate-y-1 animate-slide-up"
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg font-display group-hover:text-primary transition-colors">
-                          {set.name}
-                        </CardTitle>
-                        {set.description && (
-                          <CardDescription className="mt-1 line-clamp-2">
-                            {set.description}
-                          </CardDescription>
-                        )}
-                      </div>
-                      <div className="flex gap-1">
-                        <Link to={`/edit/${set.id}`}>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-primary hover:bg-primary/10"
+                  set={set}
+                  animationDelay={index * 100}
+                  action={
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="animate-scale-in">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you sure you want to delete this set?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the vocabulary set "{set.name}" and all its contents.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => deleteSet(set.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                           >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </Link>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="animate-scale-in">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Are you sure you want to delete this set?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the vocabulary set "{set.name}" and all its contents.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => deleteSet(set.id)}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
-                      <span className="flex items-center gap-1">
-                        <BookOpen className="h-4 w-4" />
-                        {set.item_count} {set.item_count === 1 ? "term" : "terms"}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <BarChart3 className="h-4 w-4" />
-                        {set.progress}% mastered
-                      </span>
-                    </div>
-                    <div className="mb-3">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                        {set.language === "spanish" ? "🇪🇸 Spanish" : "🇫🇷 French"}
-                      </span>
-                    </div>
-
-                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden mb-4">
-                      <div
-                        className="h-full gradient-success transition-all duration-500"
-                        style={{ width: `${set.progress}%` }}
-                      />
-                    </div>
-
-                    <Link to={`/study/${set.id}`}>
-                      <Button variant="default" className="w-full">
-                        Study Now
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  }
+                />
               ))}
             </div>
           )}

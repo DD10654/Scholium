@@ -14,6 +14,7 @@ import Index from "./pages/Index";
 import Demo from "./pages/Demo";
 import CreateSet from "./pages/CreateSet";
 import Study from "./pages/Study";
+import FirstPass from "./pages/FirstPass";
 import Practice from "./pages/Practice";
 import PracticeSetup from "./pages/PracticeSetup";
 import Auth from "./pages/Auth";
@@ -69,6 +70,7 @@ function FadeRoutes({ description }: { description?: string | null }) {
         <Route path="/edit/:id" element={<EditSet />} />
         <Route path="/folder/:id" element={<Folder />} />
         <Route path="/study/:id" element={<Study />} />
+        <Route path="/first-pass/:id" element={<FirstPass />} />
         <Route path="/practice" element={<Practice />} />
         <Route path="/practice-setup" element={<PracticeSetup />} />
         <Route path="/signin" element={<Auth defaultMode="signin" />} />
