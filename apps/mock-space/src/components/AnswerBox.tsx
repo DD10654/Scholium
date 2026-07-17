@@ -11,10 +11,10 @@ import {
   type Range,
 } from "@/lib/textLayout";
 import {
-  appendText,
-  backspace,
   commit,
   isDeletable,
+  pendingWord,
+  setPending,
   strikeRange,
   type AnswerBox as Box,
 } from "@/lib/model";
@@ -35,6 +35,35 @@ const CARET_KEYS = new Set([
 
 /** Ctrl/Cmd chords we refuse. `c` is absent on purpose — copying was not blocked. */
 const BLOCKED_CHORDS = new Set(["a", "z", "y", "x", "v"]);
+
+/**
+ * Edits we refuse outright. Everything absent from this set — insertText,
+ * insertLineBreak, deleteContentBackward, the composition types — is handed to the
+ * browser, which can only ever reach the pending word (see `setPending`).
+ *
+ * These are the ones that would either revise text wholesale or bypass the
+ * keyboard: a paste, a drag-drop, an undo, or a word-at-a-time delete.
+ * `insertReplacementText` is here because it is how mobile autocorrect rewrites a
+ * finished word — it is *not* how the macOS accent menu works, which selects the
+ * base letter and overwrites it with an ordinary `insertText`.
+ */
+const REFUSED_INPUT_TYPES = new Set([
+  "insertFromPaste",
+  "insertFromPasteAsQuotation",
+  "insertFromDrop",
+  "insertFromYank",
+  "insertReplacementText",
+  "historyUndo",
+  "historyRedo",
+  "deleteByCut",
+  "deleteByDrag",
+  "deleteWordBackward",
+  "deleteWordForward",
+  "deleteContentForward",
+  "deleteHardLineBackward",
+  "deleteSoftLineBackward",
+  "deleteEntireSoftLine",
+]);
 
 const MIN_WIDTH_PT = 60;
 
@@ -78,8 +107,15 @@ export default function AnswerBox({
   const latest = useRef({ box, locked, onChange, onRemove, selection });
   latest.current = { box, locked, onChange, onRemove, selection };
 
+  // The sink now holds the pending word, so focusing it could land the caret
+  // anywhere in that word. Pin it to the end: that is the only place text may be
+  // added, and it is what keeps typing append-only after a click.
   const focusSink = useCallback(() => {
-    sinkRef.current?.focus({ preventScroll: true });
+    const sink = sinkRef.current;
+    if (!sink) return;
+    sink.focus({ preventScroll: true });
+    const end = sink.value.length;
+    sink.setSelectionRange(end, end);
   }, []);
 
   // A newly created box, or one the student clicked into, should be ready to type.
@@ -108,35 +144,45 @@ export default function AnswerBox({
       setSelection(null);
     };
 
-    const onBeforeInput = (e: InputEvent) => {
-      // The one event we let through. It writes into the (otherwise empty) sink,
-      // confining the browser's own editing — and its undo stack — to the word
-      // currently being composed. We read the result on compositionend.
-      if (e.inputType === "insertCompositionText") return;
-
-      e.preventDefault();
+    // Pulls the sink's contents into the model. The sink holds the pending word and
+    // nothing else, so whatever the browser just did to it is by construction an
+    // edit to the current word — precisely what a student is allowed to do.
+    const syncFromSink = () => {
       const { box: b, locked: isLocked } = latest.current;
-      if (isLocked || composing.current) return;
+      if (isLocked) return;
 
-      switch (e.inputType) {
-        case "insertText":
-          if (e.data) apply(appendText(b, e.data));
-          break;
-        case "insertLineBreak":
-        case "insertParagraph":
-          apply(appendText(b, "\n"));
-          break;
-        case "deleteContentBackward":
-          apply(backspace(b));
-          break;
-        default:
-          // insertFromPaste, insertFromDrop, insertReplacementText (mobile
-          // autocorrect), historyUndo, historyRedo, deleteWordBackward,
-          // deleteContentForward, deleteByCut … every one of these would let a
-          // student revise committed text. Refused, by falling through.
-          break;
+      const next = setPending(b, sink.value);
+
+      // A word break has just moved text into the frozen prefix. Hand the sink back
+      // only what is still pending, so backspace cannot cross the boundary: there
+      // is nothing behind it left to delete.
+      //
+      // Done synchronously here rather than in an effect so it lands before the
+      // next keystroke can be typed into a stale sink.
+      const pending = pendingWord(next);
+      if (!composing.current && sink.value !== pending) {
+        sink.value = pending;
+        sink.setSelectionRange(pending.length, pending.length);
       }
+      if (next !== b) apply(next);
     };
+
+    const onBeforeInput = (e: InputEvent) => {
+      const { locked: isLocked } = latest.current;
+      if (isLocked || REFUSED_INPUT_TYPES.has(e.inputType)) {
+        e.preventDefault();
+        return;
+      }
+      // Everything else is the browser's to carry out — insertText, backspace,
+      // Enter, composition. These used to be intercepted and replayed into the
+      // model, which left the sink permanently empty; the macOS accent menu needs
+      // the base letter to really be there, because it works by selecting that
+      // letter and overwriting it. With nothing to select it silently re-inserted
+      // the base letter, which is why accents could not be typed at all.
+    };
+
+    // The model follows the sink while typing, never the reverse.
+    const onInput = () => syncFromSink();
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (composing.current) return;
@@ -177,40 +223,49 @@ export default function AnswerBox({
       composing.current = true;
     };
 
-    const onCompositionEnd = (e: CompositionEvent) => {
+    // The IME has finished; the sink now holds the composed text as ordinary
+    // content. `input` fires either side of this, so syncing is all that is left.
+    const onCompositionEnd = () => {
       composing.current = false;
-      const { box: b, locked: isLocked } = latest.current;
-      sink.value = "";
-      if (!isLocked && e.data) apply(appendText(b, e.data));
+      syncFromSink();
     };
 
     const refuse = (e: Event) => e.preventDefault();
 
     sink.addEventListener("beforeinput", onBeforeInput as EventListener);
+    sink.addEventListener("input", onInput);
     sink.addEventListener("keydown", onKeyDown);
     sink.addEventListener("compositionstart", onCompositionStart);
-    sink.addEventListener("compositionend", onCompositionEnd as EventListener);
+    sink.addEventListener("compositionend", onCompositionEnd);
     sink.addEventListener("paste", refuse);
     sink.addEventListener("drop", refuse);
     sink.addEventListener("dragover", refuse);
 
     return () => {
       sink.removeEventListener("beforeinput", onBeforeInput as EventListener);
+      sink.removeEventListener("input", onInput);
       sink.removeEventListener("keydown", onKeyDown);
       sink.removeEventListener("compositionstart", onCompositionStart);
-      sink.removeEventListener("compositionend", onCompositionEnd as EventListener);
+      sink.removeEventListener("compositionend", onCompositionEnd);
       sink.removeEventListener("paste", refuse);
       sink.removeEventListener("drop", refuse);
       sink.removeEventListener("dragover", refuse);
     };
   }, [strikeSelection]);
 
-  // The sink is a keystroke target, never a text buffer. Anything the browser
-  // manages to leave in it (a stray composition, an autofill) is discarded, which
-  // is why its native undo history can never resurrect committed text.
+  // Reconciles the sink with the model when the model changed from somewhere other
+  // than typing — the symbol palette, a Tab or strike commit, a restored attempt.
+  // A no-op during ordinary typing, since syncFromSink already left them equal;
+  // that matters, because writing to the sink mid-word would destroy the selection
+  // the macOS accent menu puts on the letter you are holding.
   useEffect(() => {
-    if (sinkRef.current && !composing.current) sinkRef.current.value = "";
-  }, [box.text]);
+    const sink = sinkRef.current;
+    if (!sink || composing.current) return;
+    const pending = pendingWord(box);
+    if (sink.value === pending) return;
+    sink.value = pending;
+    if (document.activeElement === sink) sink.setSelectionRange(pending.length, pending.length);
+  }, [box]);
 
   useEffect(() => {
     if (locked) setConfirmWord(null);

@@ -5,6 +5,8 @@ import {
   commit,
   createBox,
   isDeletable,
+  pendingWord,
+  setPending,
   strikeRange,
   strikeWordAt,
   type AnswerBox,
@@ -113,6 +115,71 @@ describe("backspace — the whole deletion guarantee", () => {
     b = strikeWordAt(b, 6); // strikes "mitochondira", which commits
     b = backspace(b);
     expect(b.text).toBe("the mitochondira");
+  });
+});
+
+/**
+ * `setPending` is the single write the editor makes: the browser owns a textarea
+ * holding just the pending word, and its contents land here. That makes the
+ * append-only guarantee structural — so these tests pin it against arbitrary,
+ * even hostile, input rather than against a list of events we remembered to catch.
+ */
+describe("setPending", () => {
+  it("reports the pending word", () => {
+    expect(pendingWord(type(box(), "hello wor"))).toBe("wor");
+    expect(pendingWord(type(box(), "hello "))).toBe("");
+    expect(pendingWord(box())).toBe("");
+  });
+
+  it("rewrites the pending word", () => {
+    expect(setPending(type(box(), "hello wor"), "world").text).toBe("hello world");
+  });
+
+  it("copies committed text through untouched, whatever it is handed", () => {
+    const b = type(box(), "hello wor"); // "hello " is frozen at index 6
+    for (const hostile of ["", "X", "ANYTHING AT ALL", "\n\n", "évèrything"]) {
+      const next = setPending(b, hostile);
+      // Already-frozen text is byte-identical, and the boundary never retreats.
+      // It may advance — spaces in the new pending word freeze more, which is
+      // exactly what typing a space is supposed to do.
+      expect(next.text.slice(0, b.commitIndex)).toBe("hello ");
+      expect(next.commitIndex).toBeGreaterThanOrEqual(b.commitIndex);
+    }
+  });
+
+  it("never moves commitIndex backwards", () => {
+    const b = commit(type(box(), "hello world")); // everything frozen
+    expect(setPending(b, "").commitIndex).toBe(11);
+    expect(setPending(b, "").text).toBe("hello world");
+  });
+
+  it("commits through a word break the browser just put in", () => {
+    // Typing a space is the browser inserting it into the sink; the word freezes.
+    const b = setPending(type(box(), "cafe"), "cafe ");
+    expect(b.commitIndex).toBe(5);
+    expect(pendingWord(b)).toBe("");
+  });
+
+  it("freezes only up to the last break, keeping the remainder pending", () => {
+    const b = setPending(box(), "one two three");
+    expect(b.commitIndex).toBe(8);
+    expect(pendingWord(b)).toBe("three");
+  });
+
+  // The macOS accent menu selects the base letter and overwrites it with a plain
+  // insertText, so the sink goes "cafe" → "café" and the model simply follows.
+  it("carries an accent replacement through", () => {
+    expect(setPending(type(box(), "cafe"), "café").text).toBe("café");
+  });
+
+  it("leaves an accented letter as erasable as any other pending letter", () => {
+    const b = setPending(type(box(), "cafe"), "café");
+    expect(backspace(b).text).toBe("caf");
+  });
+
+  it("is a no-op when nothing changed", () => {
+    const b = type(box(), "hello wor");
+    expect(setPending(b, "wor")).toBe(b);
   });
 });
 

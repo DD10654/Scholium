@@ -70,22 +70,43 @@ function lastBreakEnd(text: string): number {
   return 0;
 }
 
+/** The trailing word the student is still typing: everything past `commitIndex`. */
+export function pendingWord(box: AnswerBox): string {
+  return box.text.slice(box.commitIndex);
+}
+
 /**
- * Appends to the end of the box. There is no other way to add text: no insertion
- * point exists anywhere else, by construction.
+ * Replaces the pending word, committing through any word break it now contains.
  *
- * `commitIndex` never moves backwards (hence the `max`). So after a blur commits
- * the whole text, typing "ld" onto "…wor" leaves only "ld" erasable — the blur
- * really did freeze "wor", which is the point.
+ * This is the one write the editor makes. `AnswerBox` keeps the pending word — and
+ * only the pending word — inside the hidden textarea the browser types into, then
+ * hands the textarea's contents here. The browser is free to edit that textarea
+ * however it likes (insert, backspace, compose, or the macOS accent menu selecting
+ * a letter and overwriting it) because it physically cannot reach committed text:
+ * that text is not in the textarea to edit.
+ *
+ * The guarantee is structural rather than a matter of catching every event. Text
+ * before `commitIndex` is copied through untouched, and `commitIndex` never moves
+ * backwards (hence the `max`) — so no argument to this function, however hostile,
+ * can revise a committed word.
  */
-export function appendText(box: AnswerBox, insert: string): AnswerBox {
-  if (!insert) return box;
-  const text = box.text + insert;
+export function setPending(box: AnswerBox, pending: string): AnswerBox {
+  const text = box.text.slice(0, box.commitIndex) + pending;
+  if (text === box.text) return box;
   return {
     ...box,
     text,
     commitIndex: Math.max(box.commitIndex, lastBreakEnd(text)),
   };
+}
+
+/**
+ * Appends to the end of the box. Used where text arrives from outside the textarea
+ * — the symbol palette — since everything typed flows through `setPending`.
+ */
+export function appendText(box: AnswerBox, insert: string): AnswerBox {
+  if (!insert) return box;
+  return setPending(box, pendingWord(box) + insert);
 }
 
 /** Deletes the last character, but only if it is inside the uncommitted word. */

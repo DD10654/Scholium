@@ -145,9 +145,24 @@ All apps use **Tailwind CSS** with **shadcn/ui** (Radix UI primitives + CVA). De
      rejects rotated pages and offset crop boxes so that transform stays a scale plus a flip.
 
   The append-only rules (`model.ts`) are pure functions, deliberately outside React: the integrity
-  guarantee is proved by `model.test.ts`, not by poking the DOM. `AnswerBox.tsx` uses a hidden
-  textarea as a keystroke sink whose `value` is never read — the browser's undo stack is therefore
-  inert by construction rather than suppressed.
+  guarantee is proved by `model.test.ts`, not by poking the DOM.
+
+  5. **The hidden textarea in `AnswerBox.tsx` holds the pending word — exactly the uncommitted
+     tail — and nothing else.** Committed text lives only in the model, so the browser cannot
+     reach it: there is nothing behind the sink's first character to backspace into, select, or
+     undo. Append-only is therefore structural, not a matter of catching every event, and
+     `setPending()` is the single write (it copies committed text through and never moves
+     `commitIndex` backwards).
+
+     Do **not** go back to intercepting `insertText` and replaying it into the model, which is
+     what left the sink permanently empty. The macOS press-and-hold accent menu works by
+     *selecting* the base letter and overwriting it with an ordinary `insertText` — with an empty
+     sink it has nothing to select and silently re-inserts the base letter, so accents cannot be
+     typed at all. (It does **not** use `insertReplacementText`; that is mobile autocorrect
+     rewriting a finished word, and stays in `REFUSED_INPUT_TYPES`.) For the same reason, never
+     write to `sink.value` mid-word: it destroys the selection the accent menu is relying on.
+     `REFUSED_INPUT_TYPES` is the whole list of edits still preventDefaulted — paste, drop, undo,
+     word-at-a-time deletes.
 
 ### Storybook
 
