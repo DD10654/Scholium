@@ -1,8 +1,8 @@
 import type { TwoSider } from "@/types";
 
-// Essay questions whose marks come from arguing both sides. Each point is
-// pre-compressed to one keyword; the keywords' initials spell a mnemonic so a
-// student only has to remember one word per side in the exam. Static seed data
+// Essay questions argued on two sides. Each point is pre-compressed to one
+// keyword; the keywords' initials spell a mnemonic so a student only has to
+// remember one word per side in the exam. Static seed data
 // (like data/subjects.ts) — progress is stored per-user in localStorage.
 export const TWO_SIDERS: TwoSider[] = [
   {
@@ -10,7 +10,6 @@ export const TWO_SIDERS: TwoSider[] = [
     subject: "Economics",
     emoji: "📈",
     question: "Evaluate the case for and against the use of protectionist tariffs.",
-    marks: 25,
     sides: [
       {
         stance: "for",
@@ -45,7 +44,6 @@ export const TWO_SIDERS: TwoSider[] = [
     subject: "Economics",
     emoji: "📈",
     question: "Discuss whether the government should raise the national minimum wage.",
-    marks: 25,
     sides: [
       {
         stance: "for",
