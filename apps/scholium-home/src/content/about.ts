@@ -26,6 +26,6 @@ export const ABOUT = {
   /** Rendered as `{text} <a href="mailto:…">{email}</a>`. */
   contact: {
     text: "Want to offer any feedback for Scholium? Contact me at",
-    email: "aaravagarwal.1511@gmail.com",
+    email: "admin@thescholium.com",
   },
 };

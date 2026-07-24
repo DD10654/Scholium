@@ -55,7 +55,7 @@ Other variables Supabase exposes if you need them: `{{ .Token }}`, `{{ .TokenHas
 
 ## Customising
 
-- **Contact address:** all three link to `aaravagarwal.1511@gmail.com` in the footer — search/replace
+- **Contact address:** all three link to `admin@thescholium.com` in the footer — search/replace
   to change it (keep it consistent with the Privacy Policy's grievance/contact email).
 - **Colors:** primary button `#4F46E5` (light) / `#6366f1` (dark); update both the inline `style` and
   the `<style>` dark-mode block if you rebrand.

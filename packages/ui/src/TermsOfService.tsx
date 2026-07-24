@@ -35,7 +35,7 @@ export function TermsOfService({ lastUpdated = DEFAULT_UPDATED, homeUrl }: Legal
       <p>
         You are responsible for your account credentials and for activity under your account.
         Provide accurate information and keep it current. Tell us promptly at
-        aaravagarwal.1511@gmail.com if you suspect unauthorised use.
+        admin@thescholium.com if you suspect unauthorised use.
       </p>
 
       <h2>3. Your content</h2>
@@ -114,7 +114,7 @@ export function TermsOfService({ lastUpdated = DEFAULT_UPDATED, homeUrl }: Legal
       <p>
         These Terms are governed by the laws of India. For complaints, contact
         our Grievance Officer under India’s Information Technology (Intermediary Guidelines)
-        Rules, 2021: Vivek Agarwal, aaravagarwal.1511@gmail.com. We acknowledge
+        Rules, 2021: Vivek Agarwal, admin@thescholium.com. We acknowledge
         complaints within 24 hours and aim to resolve them within 15 days.
       </p>
 
@@ -125,7 +125,7 @@ export function TermsOfService({ lastUpdated = DEFAULT_UPDATED, homeUrl }: Legal
       </p>
 
       <h2>12. Contact</h2>
-      <p>Questions about these Terms: aaravagarwal.1511@gmail.com.</p>
+      <p>Questions about these Terms: admin@thescholium.com.</p>
     </LegalPage>
   );
 }

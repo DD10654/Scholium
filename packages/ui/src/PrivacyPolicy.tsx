@@ -12,7 +12,7 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
         This Privacy Policy explains how Vivek Agarwal (“Scholium”, “we”, “us”) handles
         personal data across the Scholium suite — Language Hub, Recall, Poetry Notes, Past
         Papers, and the Scholium home site (the “Service”). We are the data controller. For
-        privacy questions, contact aaravagarwal.1511@gmail.com.
+        privacy questions, contact admin@thescholium.com.
       </p>
 
       <h2>1. Data we collect</h2>
@@ -75,7 +75,7 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
         Depending on where you live (e.g. under the GDPR/UK GDPR or CCPA/CPRA), you may have the
         right to access, correct, delete, port, or restrict your data, to object to certain
         processing, and to withdraw consent. You can export or delete your content from within
-        the Service, or contact aaravagarwal.1511@gmail.com. You may also complain to your local
+        the Service, or contact admin@thescholium.com. You may also complain to your local
         data-protection authority.
       </p>
 
@@ -108,8 +108,8 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
       <h2>10. Grievances &amp; contact</h2>
       <p>
         Grievance Officer (India IT Rules, 2021): Vivek Agarwal,
-        aaravagarwal.1511@gmail.com. We acknowledge complaints within 24 hours and aim to
-        resolve them within 15 days. General privacy contact: aaravagarwal.1511@gmail.com.
+        admin@thescholium.com. We acknowledge complaints within 24 hours and aim to
+        resolve them within 15 days. General privacy contact: admin@thescholium.com.
       </p>
 
       <h2>11. Changes</h2>
