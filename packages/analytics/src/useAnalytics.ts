@@ -4,11 +4,18 @@ export type TrackFn = (name: string, props?: Record<string, unknown>, path?: str
 
 export interface AnalyticsContextValue {
   track: TrackFn;
-  /** Persist the user's opt-out choice (default on → false). */
+  /** Persist the user's opt-out choice (default on → false). Writes this origin's
+   *  localStorage and, when signed in, the suite-wide user_prefs row. */
   setOptOut: (optedOut: boolean) => void;
+  /** Current opt-out state (localStorage + browser DNT/GPC). */
+  isOptedOut: () => boolean;
 }
 
-const noop: AnalyticsContextValue = { track: () => {}, setOptOut: () => {} };
+const noop: AnalyticsContextValue = {
+  track: () => {},
+  setOptOut: () => {},
+  isOptedOut: () => false,
+};
 
 export const AnalyticsContext = createContext<AnalyticsContextValue | null>(null);
 

@@ -4,9 +4,10 @@ import { supabase } from "./supabase";
 import Stats from "./pages/Stats";
 import Content from "./pages/Content";
 import TwoSiders from "./pages/TwoSiders";
+import Analytics from "./pages/Analytics";
 import Login from "./pages/Login";
 
-type Tab = "stats" | "content" | "essays";
+type Tab = "stats" | "analytics" | "content" | "essays";
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null);
@@ -36,6 +37,9 @@ export default function App() {
             <TabBtn active={tab === "stats"} onClick={() => setTab("stats")}>
               Stats
             </TabBtn>
+            <TabBtn active={tab === "analytics"} onClick={() => setTab("analytics")}>
+              Analytics
+            </TabBtn>
             <TabBtn active={tab === "content"} onClick={() => setTab("content")}>
               Content
             </TabBtn>
@@ -51,7 +55,15 @@ export default function App() {
           </button>
         </div>
       </header>
-      {tab === "stats" ? <Stats /> : tab === "content" ? <Content /> : <TwoSiders />}
+      {tab === "stats" ? (
+        <Stats />
+      ) : tab === "analytics" ? (
+        <Analytics />
+      ) : tab === "content" ? (
+        <Content />
+      ) : (
+        <TwoSiders />
+      )}
     </div>
   );
 }

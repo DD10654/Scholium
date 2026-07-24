@@ -9,11 +9,19 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { SettingsLayout, SettingsCard } from "@repo/ui";
 import { useDarkMode } from "@repo/hooks";
+import { useAnalytics } from "@repo/analytics";
 
 const Settings = () => {
     const navigate = useNavigate();
     const { user, signOut } = useAuth();
     const { isDark, toggle: toggleDark } = useDarkMode();
+    const { isOptedOut, setOptOut } = useAnalytics();
+    const [shareAnalytics, setShareAnalytics] = useState(() => !isOptedOut());
+    const toggleAnalytics = () => {
+        const next = !shareAnalytics;
+        setShareAnalytics(next);
+        setOptOut(!next);
+    };
     const [resetEmail, setResetEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
     const [resetSent, setResetSent] = useState(false);
@@ -60,6 +68,21 @@ const Settings = () => {
                         aria-pressed={isDark}
                         onClick={toggleDark}
                         aria-label="Toggle dark mode"
+                    />
+                }
+            />
+
+            <SettingsCard
+                icon="📊"
+                title="Usage analytics"
+                description="Help improve Scholium by sharing anonymous usage data. We never collect the content you create, and you can turn this off anytime."
+                action={
+                    <button
+                        className="rui-toggle"
+                        role="switch"
+                        aria-pressed={shareAnalytics}
+                        onClick={toggleAnalytics}
+                        aria-label="Toggle usage analytics"
                     />
                 }
             />

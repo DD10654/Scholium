@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { AnalyticsContext, type AnalyticsContextValue } from './useAnalytics';
 import { Tracker, type QueuedEvent, type StorageLike } from './core';
 
@@ -123,6 +123,29 @@ export function AnalyticsProvider({
     tracker.identify(userId);
   }, [tracker, userId]);
 
+  // On sign-in the profile is the source of truth: pull the stored opt-out down to
+  // this origin's localStorage, so a choice made in another app applies here too.
+  useEffect(() => {
+    if (!userId) return;
+    let active = true;
+    try {
+      void Promise.resolve(
+        supabase.from('user_prefs').select('analytics_opt_out').eq('user_id', userId).maybeSingle(),
+      )
+        .then((res: { data?: { analytics_opt_out?: boolean } | null }) => {
+          if (active && res?.data && typeof res.data.analytics_opt_out === 'boolean') {
+            tracker.setOptOut(res.data.analytics_opt_out);
+          }
+        })
+        .catch(() => {});
+    } catch {
+      // ignore — analytics must never throw
+    }
+    return () => {
+      active = false;
+    };
+  }, [userId, supabase, tracker]);
+
   // One `app_open` per app load. track() no-ops when analytics is disabled.
   useEffect(() => {
     tracker.track('app_open');
@@ -173,12 +196,34 @@ export function AnalyticsProvider({
     };
   }, [tracker, supabaseUrl, supabaseAnonKey]);
 
+  // Persist the opt-out choice: localStorage via the tracker (short-circuits track
+  // immediately) plus the suite-wide user_prefs row when signed in.
+  const setOptOut = useCallback(
+    (optedOut: boolean) => {
+      tracker.setOptOut(optedOut);
+      if (userId) {
+        try {
+          void Promise.resolve(
+            supabase.from('user_prefs').upsert(
+              { user_id: userId, analytics_opt_out: optedOut, updated_at: new Date().toISOString() },
+              { onConflict: 'user_id' },
+            ),
+          ).catch(() => {});
+        } catch {
+          // ignore
+        }
+      }
+    },
+    [tracker, userId, supabase],
+  );
+
   const value = useMemo<AnalyticsContextValue>(
     () => ({
       track: (name, props, path) => tracker.track(name, props, path),
-      setOptOut: (optedOut) => tracker.setOptOut(optedOut),
+      setOptOut,
+      isOptedOut: () => tracker.isOptedOut(),
     }),
-    [tracker],
+    [tracker, setOptOut],
   );
 
   return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;

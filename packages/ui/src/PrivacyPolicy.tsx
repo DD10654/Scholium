@@ -27,7 +27,11 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
         </li>
         <li>
           <strong>Usage &amp; device data</strong> — basic logs, device/browser information, and
-          interaction data needed to run and secure the Service.
+          interaction data needed to run and secure the Service. This includes privacy-respecting
+          analytics: which features you use, when, and on which app. It is tied to your account when
+          you are signed in, or to a random device identifier stored on your device when you are
+          not. We do not record the content you create, and you can turn it off at any time in each
+          app&rsquo;s Settings (see §8).
         </li>
       </ul>
 
@@ -45,7 +49,7 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
         <li><strong>Supabase</strong> — database, authentication, and storage.</li>
         <li><strong>Lemon Squeezy</strong> — our merchant of record; processes payments, billing, and applicable sales tax/VAT/GST for paid plans.</li>
         <li><strong>Google Cloud (Text-to-Speech)</strong> — generating audio in Language Hub from the text you submit.</li>
-        <li><strong>Vercel</strong> — hosting and content delivery.</li>
+        <li><strong>Vercel</strong> — hosting, content delivery, and privacy-friendly, cookieless traffic analytics (Vercel Web Analytics).</li>
       </ul>
       <p>
         We sign data-processing agreements with these providers. Some may process data outside
@@ -83,11 +87,16 @@ export function PrivacyPolicy({ lastUpdated = DEFAULT_UPDATED, homeUrl }: LegalD
         child has provided data without the required consent, contact us and we will delete it.
       </p>
 
-      <h2>8. Cookies</h2>
+      <h2>8. Cookies &amp; analytics</h2>
       <p>
         We use only the cookies and local storage needed to sign you in and remember your
-        preferences (such as dark mode). [Add a cookie/consent notice if analytics or
-        non-essential cookies are introduced.]
+        preferences (such as dark mode). Our product analytics are <strong>first-party</strong>:
+        events are recorded against your account or a random device identifier held in your
+        browser&rsquo;s local storage — there are no advertising cookies, no cross-site tracking, and
+        no data sold or shared for advertising. Our traffic analytics (Vercel Web Analytics) are
+        cookieless. You can turn product analytics off at any time from the toggle in each
+        app&rsquo;s Settings; we also honour your browser&rsquo;s Global Privacy Control and
+        Do-Not-Track signals.
       </p>
 
       <h2>9. Security</h2>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useProject } from '../contexts/ProjectContext';
 import { SettingsLayout, SettingsCard } from '@repo/ui';
+import { useAnalytics } from '@repo/analytics';
 import { supabase } from '../integrations/supabase/client';
 
 interface SettingsProps {
@@ -12,6 +13,13 @@ interface SettingsProps {
 export function Settings({ onBack, onSignOut }: SettingsProps) {
   const { user } = useAuth();
   const { isDarkMode, toggleDarkMode } = useProject();
+  const { isOptedOut, setOptOut } = useAnalytics();
+  const [shareAnalytics, setShareAnalytics] = useState(() => !isOptedOut());
+  const toggleAnalytics = () => {
+    const next = !shareAnalytics;
+    setShareAnalytics(next);
+    setOptOut(!next);
+  };
   const [resetEmail, setResetEmail] = useState(user?.email || '');
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
@@ -54,6 +62,21 @@ export function Settings({ onBack, onSignOut }: SettingsProps) {
             aria-pressed={isDarkMode}
             onClick={toggleDarkMode}
             aria-label="Toggle dark mode"
+          />
+        }
+      />
+
+      <SettingsCard
+        icon="📊"
+        title="Usage analytics"
+        description="Help improve Scholium by sharing anonymous usage data. We never collect the content you create, and you can turn this off anytime."
+        action={
+          <button
+            className="rui-toggle"
+            role="switch"
+            aria-pressed={shareAnalytics}
+            onClick={toggleAnalytics}
+            aria-label="Toggle usage analytics"
           />
         }
       />

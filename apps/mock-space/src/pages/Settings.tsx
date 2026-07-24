@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SettingsLayout, SettingsCard } from "@repo/ui";
 import { useDarkMode } from "@repo/hooks";
+import { useAnalytics } from "@repo/analytics";
 import "@repo/ui/settings-layout.css";
 import "@repo/ui/settings-card.css";
 import { PAPER_RETENTION_DAYS } from "@/lib/paperRetention";
@@ -8,6 +10,13 @@ import { PAPER_RETENTION_DAYS } from "@/lib/paperRetention";
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { isDark, toggle } = useDarkMode();
+  const { isOptedOut, setOptOut } = useAnalytics();
+  const [shareAnalytics, setShareAnalytics] = useState(() => !isOptedOut());
+  const toggleAnalytics = () => {
+    const next = !shareAnalytics;
+    setShareAnalytics(next);
+    setOptOut(!next);
+  };
 
   return (
     <SettingsLayout onBack={() => navigate(-1)}>
@@ -22,6 +31,21 @@ export default function SettingsPage() {
             aria-pressed={isDark}
             onClick={toggle}
             aria-label="Toggle dark mode"
+          />
+        }
+      />
+
+      <SettingsCard
+        icon="📊"
+        title="Usage analytics"
+        description="Help improve Scholium by sharing anonymous usage data. We never collect the content you create, and you can turn this off anytime."
+        action={
+          <button
+            className="rui-toggle"
+            role="switch"
+            aria-pressed={shareAnalytics}
+            onClick={toggleAnalytics}
+            aria-label="Toggle usage analytics"
           />
         }
       />
